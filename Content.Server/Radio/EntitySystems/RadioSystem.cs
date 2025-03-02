@@ -38,7 +38,7 @@ public sealed class RadioSystem : EntitySystem
     {
         base.Initialize();
         SubscribeLocalEvent<IntrinsicRadioReceiverComponent, RadioReceiveEvent>(OnIntrinsicReceive);
-        SubscribeLocalEvent<IntrinsicRadioTransmitterComponent, EntitySpokeEvent>(OnIntrinsicSpeak);
+        //SubscribeLocalEvent<IntrinsicRadioTransmitterComponent, EntitySpokeEvent>(OnIntrinsicSpeak);
 
         _exemptQuery = GetEntityQuery<TelecomExemptComponent>();
     }
@@ -47,8 +47,8 @@ public sealed class RadioSystem : EntitySystem
     {
         if (args.Channel != null && component.Channels.Contains(args.Channel.ID))
         {
-            SendRadioMessage(uid, args.Message, args.Channel, uid);
-            args.Channel = null; // prevent duplicate messages from other listeners.
+            //SendRadioMessage(uid, args.Message, args.Channel, uid);
+            //args.Channel = null; // prevent duplicate messages from other listeners.
         }
     }
 
@@ -57,6 +57,9 @@ public sealed class RadioSystem : EntitySystem
         if (TryComp(uid, out ActorComponent? actor))
             _netMan.ServerSendMessage(args.ChatMsg, actor.PlayerSession.Channel);
     }
+
+
+    // CHAT-TODO: This whole thing will need to be separately refactored!
 
     /// <summary>
     /// Send radio message to all active radio listeners
@@ -103,7 +106,7 @@ public sealed class RadioSystem : EntitySystem
             ("message", content));
 
         // most radios are relayed to chat, so lets parse the chat message beforehand
-        var chat = new ChatMessage(
+        /*var chat = new ChatMessage(
             ChatChannel.Radio,
             message,
             wrappedMessage,
@@ -156,7 +159,7 @@ public sealed class RadioSystem : EntitySystem
             _adminLogger.Add(LogType.Chat, LogImpact.Low, $"Radio message from {ToPrettyString(messageSource):user} on {channel.LocalizedName}: {message}");
 
         _replay.RecordServerMessage(chat);
-        _messages.Remove(message);
+        _messages.Remove(message);*/
     }
 
     /// <inheritdoc cref="TelecomServerComponent"/>

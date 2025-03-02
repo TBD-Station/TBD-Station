@@ -1,38 +1,73 @@
 using System.Diagnostics.CodeAnalysis;
 using Content.Shared.Administration;
 using Content.Shared.Chat;
+using Content.Shared.Chat.Prototypes;
 using Content.Shared.Players.RateLimiting;
 using Robust.Shared.Network;
 using Robust.Shared.Player;
+using Robust.Shared.Prototypes;
+using Robust.Shared.Utility;
 
 namespace Content.Server.Chat.Managers
 {
     public interface IChatManager : ISharedChatManager
     {
-        /// <summary>
-        ///     Dispatch a server announcement to every connected player.
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="colorOverride">Override the color of the message being sent.</param>
-        void DispatchServerAnnouncement(string message, Color? colorOverride = null);
+        public void SendChannelMessage(
+            string message,
+            ProtoId<CommunicationChannelPrototype> communicationChannel,
+            ICommonSession? senderSession,
+            EntityUid? senderEntity,
+            HashSet<ICommonSession>? targetSessions = null,
+            bool escapeText = true,
+            ChatMessageContext? channelParameters = null,
+            bool logMessage = true
+        );
+
+        public void SendChannelMessage(
+            FormattedMessage message,
+            string communicationChannel,
+            ICommonSession? senderSession,
+            EntityUid? senderEntity,
+            HashSet<ICommonSession>? targetSessions = null,
+            ChatMessageContext? channelParameters = null,
+            bool logMessage = true
+        );
+
+        public void SendChannelMessage(
+            FormattedMessage message,
+            string communicationChannel,
+            ICommonSession? senderSession,
+            EntityUid? senderEntity,
+            List<CommunicationChannelPrototype> usedCommsTypes,
+            HashSet<ICommonSession>? targetSessions = null,
+            ChatMessageContext? channelParameters = null,
+            bool logMessage = true
+        );
+
+        public void SendChannelMessage(
+            FormattedMessage message,
+            CommunicationChannelPrototype communicationChannel,
+            ICommonSession? senderSession,
+            EntityUid? senderEntity,
+            List<CommunicationChannelPrototype> usedCommsChannels,
+            HashSet<ICommonSession>? targetSessions = null,
+            ChatMessageContext? channelParameters = null,
+            bool logMessage = true);
+
+        void SendAdminAnnouncement(string message, AdminFlags? requiredFlags = null);
+        void SendAdminAnnouncementMessage(ICommonSession player, string message, bool suppressLog = true);
+
+        void SendHookOOC(string sender, string message);
+
+        void DispatchServerAnnouncement(string message);
 
         void DispatchServerMessage(ICommonSession player, string message, bool suppressLog = false);
 
-        void TrySendOOCMessage(ICommonSession player, string message, OOCChatType type);
+        void SendAdminAlert(string message);
 
-        void SendHookOOC(string sender, string message);
-        void SendAdminAnnouncement(string message, AdminFlags? flagBlacklist = null, AdminFlags? flagWhitelist = null);
-        void SendAdminAnnouncementMessage(ICommonSession player, string message, bool suppressLog = true);
+        void SendAdminAlert(EntityUid player, string message);
 
-        void ChatMessageToOne(ChatChannel channel, string message, string wrappedMessage, EntityUid source, bool hideChat,
-            INetChannel client, Color? colorOverride = null, bool recordReplay = false, string? audioPath = null, float audioVolume = 0, NetUserId? author = null);
-
-        void ChatMessageToMany(ChatChannel channel, string message, string wrappedMessage, EntityUid source, bool hideChat, bool recordReplay,
-            IEnumerable<INetChannel> clients, Color? colorOverride = null, string? audioPath = null, float audioVolume = 0, NetUserId? author = null);
-
-        void ChatMessageToManyFiltered(Filter filter, ChatChannel channel, string message, string wrappedMessage, EntityUid source, bool hideChat, bool recordReplay, Color? colorOverride, string? audioPath = null, float audioVolume = 0);
-
-        void ChatMessageToAll(ChatChannel channel, string message, string wrappedMessage, EntityUid source, bool hideChat, bool recordReplay, Color? colorOverride = null, string? audioPath = null, float audioVolume = 0, NetUserId? author = null);
+        void ChatFormattedMessageToHashset(FormattedMessage message, CommunicationChannelPrototype channel, IEnumerable<INetChannel> clients, EntityUid? source, bool hideChat, bool recordReplay, NetUserId? author = null);
 
         bool MessageCharacterLimit(ICommonSession player, string message);
 

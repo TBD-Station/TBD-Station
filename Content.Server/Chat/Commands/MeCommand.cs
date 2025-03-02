@@ -1,13 +1,17 @@
-using Content.Server.Chat.Systems;
+using Content.Server.Chat.Managers;
 using Content.Shared.Administration;
+using Content.Shared.Chat.Prototypes;
 using Robust.Shared.Console;
 using Robust.Shared.Enums;
+using Robust.Shared.Prototypes;
 
 namespace Content.Server.Chat.Commands
 {
     [AnyCommand]
     internal sealed class MeCommand : IConsoleCommand
     {
+        private static readonly ProtoId<CommunicationChannelPrototype> ChatChannel = "Emote";
+
         public string Command => "me";
         public string Description => "Perform an action.";
         public string Help => "me <text>";
@@ -36,8 +40,7 @@ namespace Content.Server.Chat.Commands
             if (string.IsNullOrEmpty(message))
                 return;
 
-            IoCManager.Resolve<IEntitySystemManager>().GetEntitySystem<ChatSystem>()
-                .TrySendInGameICMessage(playerEntity, message, InGameICChatType.Emote, ChatTransmitRange.Normal, false, shell, player);
+            IoCManager.Resolve<IChatManager>().SendChannelMessage(message, ChatChannel, shell.Player, playerEntity);
         }
     }
 }

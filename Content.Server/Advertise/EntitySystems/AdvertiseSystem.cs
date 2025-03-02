@@ -1,6 +1,7 @@
 using Content.Server.Advertise.Components;
-using Content.Server.Chat.Systems;
+using Content.Server.Chat.Managers;
 using Content.Server.Power.Components;
+using Content.Shared.Chat.Prototypes;
 using Content.Shared.VendingMachines;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
@@ -10,10 +11,12 @@ namespace Content.Server.Advertise.EntitySystems;
 
 public sealed class AdvertiseSystem : EntitySystem
 {
+    private static readonly ProtoId<CommunicationChannelPrototype> ChatChannel = "BubbleOnlySpeech";
+
     [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
     [Dependency] private readonly IGameTiming _gameTiming = default!;
-    [Dependency] private readonly ChatSystem _chat = default!;
+    [Dependency] private readonly IChatManager _chat = default!;
 
     /// <summary>
     /// The maximum amount of time between checking if advertisements should be displayed
@@ -62,7 +65,10 @@ public sealed class AdvertiseSystem : EntitySystem
             return;
 
         if (_prototypeManager.TryIndex(advert.Pack, out var advertisements))
-            _chat.TrySendInGameICMessage(uid, Loc.GetString(_random.Pick(advertisements.Values)), InGameICChatType.Speak, hideChat: true);
+        {
+            var message = Loc.GetString(_random.Pick(advertisements.Values));
+            _chat.SendChannelMessage(message, ChatChannel, null, uid);
+        }
     }
 
     public override void Update(float frameTime)

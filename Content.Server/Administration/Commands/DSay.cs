@@ -1,13 +1,18 @@
-using Content.Server.Chat.Systems;
+using Content.Server.Chat.Managers;
 using Content.Shared.Administration;
+using Content.Shared.Chat.Prototypes;
 using Robust.Shared.Console;
+using Robust.Shared.Prototypes;
 
 namespace Content.Server.Administration.Commands
 {
     [AdminCommand(AdminFlags.Moderator)]
     sealed class DSay : IConsoleCommand
     {
+        private static readonly ProtoId<CommunicationChannelPrototype> ChatChannel = "Dead";
+
         [Dependency] private readonly IEntityManager _e = default!;
+        [Dependency] private readonly IChatManager _chat = default!;
 
         public string Command => "dsay";
 
@@ -33,8 +38,7 @@ namespace Content.Server.Administration.Commands
             if (string.IsNullOrEmpty(message))
                 return;
 
-            var chat = _e.System<ChatSystem>();
-            chat.TrySendInGameOOCMessage(entity, message, InGameOOCChatType.Dead, false, shell, player);
+            _chat.SendChannelMessage(message, ChatChannel, player, entity);
         }
     }
 }

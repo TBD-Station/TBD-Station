@@ -35,6 +35,7 @@ using Content.Shared.Prying.Components;
 using Content.Shared.Traits.Assorted;
 using Robust.Shared.Audio.Systems;
 using Content.Shared.Ghost.Roles.Components;
+using Content.Shared.Speech.Components;
 using Content.Shared.Tag;
 
 namespace Content.Server.Zombies;

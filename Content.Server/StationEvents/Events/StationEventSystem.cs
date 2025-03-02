@@ -1,9 +1,10 @@
 using Content.Server.Administration.Logs;
+using Content.Server.Chat.Managers;
 using Content.Server.Chat.Systems;
-using Content.Server.GameTicking;
 using Content.Server.GameTicking.Rules;
 using Content.Server.Station.Systems;
 using Content.Server.StationEvents.Components;
+using Content.Shared.Chat.Prototypes;
 using Content.Shared.Database;
 using Content.Shared.GameTicking.Components;
 using Robust.Shared.Audio.Systems;
@@ -20,6 +21,7 @@ public abstract class StationEventSystem<T> : GameRuleSystem<T> where T : ICompo
     [Dependency] protected readonly IAdminLogManager AdminLogManager = default!;
     [Dependency] protected readonly IPrototypeManager PrototypeManager = default!;
     [Dependency] protected readonly ChatSystem ChatSystem = default!;
+    [Dependency] protected readonly IChatManager ChatManager = default!;
     [Dependency] protected readonly SharedAudioSystem Audio = default!;
     [Dependency] protected readonly StationSystem StationSystem = default!;
 
@@ -46,7 +48,7 @@ public abstract class StationEventSystem<T> : GameRuleSystem<T> where T : ICompo
         Filter allPlayersInGame = Filter.Empty().AddWhere(GameTicker.UserHasJoinedGame);
 
         if (stationEvent.StartAnnouncement != null)
-            ChatSystem.DispatchFilteredAnnouncement(allPlayersInGame, Loc.GetString(stationEvent.StartAnnouncement), playSound: false, colorOverride: stationEvent.StartAnnouncementColor);
+            ChatManager.SendChannelMessage(Loc.GetString(stationEvent.StartAnnouncement), FileScopedCache.GameMessageChannel, null, null);
 
         Audio.PlayGlobal(stationEvent.StartAudio, allPlayersInGame, true);
     }
@@ -85,7 +87,7 @@ public abstract class StationEventSystem<T> : GameRuleSystem<T> where T : ICompo
         Filter allPlayersInGame = Filter.Empty().AddWhere(GameTicker.UserHasJoinedGame);
 
         if (stationEvent.EndAnnouncement != null)
-            ChatSystem.DispatchFilteredAnnouncement(allPlayersInGame, Loc.GetString(stationEvent.EndAnnouncement), playSound: false, colorOverride: stationEvent.EndAnnouncementColor);
+            ChatManager.SendChannelMessage(Loc.GetString(stationEvent.EndAnnouncement), FileScopedCache.GameMessageChannel, null, null);
 
         Audio.PlayGlobal(stationEvent.EndAudio, allPlayersInGame, true);
     }
@@ -115,4 +117,9 @@ public abstract class StationEventSystem<T> : GameRuleSystem<T> where T : ICompo
             }
         }
     }
+}
+
+static file class FileScopedCache
+{
+    public static readonly ProtoId<CommunicationChannelPrototype> GameMessageChannel = "GameMessage";
 }

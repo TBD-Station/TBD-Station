@@ -3,6 +3,7 @@ using Content.Server.Popups;
 using Content.Shared.Popups;
 using Content.Shared.Mobs;
 using Content.Server.Chat;
+using Content.Server.Chat.Managers;
 using Content.Server.Chat.Systems;
 using Content.Shared.Chat.Prototypes;
 using Robust.Shared.Random;
@@ -13,7 +14,6 @@ using Robust.Shared.Prototypes;
 using Content.Server.Emoting.Systems;
 using Content.Server.Speech.EntitySystems;
 using Content.Shared.Cluwne;
-using Content.Shared.Interaction.Components;
 using Robust.Shared.Audio.Systems;
 using Content.Shared.NameModifier.EntitySystems;
 using Content.Shared.Clumsy;
@@ -22,12 +22,15 @@ namespace Content.Server.Cluwne;
 
 public sealed class CluwneSystem : EntitySystem
 {
+    private static readonly ProtoId<CommunicationChannelPrototype> EmoteChannel = "Emote";
+
     [Dependency] private readonly PopupSystem _popupSystem = default!;
     [Dependency] private readonly SharedAudioSystem _audio = default!;
     [Dependency] private readonly IRobustRandom _robustRandom = default!;
     [Dependency] private readonly SharedStunSystem _stunSystem = default!;
     [Dependency] private readonly DamageableSystem _damageableSystem = default!;
     [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
+    [Dependency] private readonly IChatManager _chatManager = default!;
     [Dependency] private readonly ChatSystem _chat = default!;
     [Dependency] private readonly AutoEmoteSystem _autoEmote = default!;
     [Dependency] private readonly NameModifierSystem _nameMod = default!;
@@ -93,14 +96,16 @@ public sealed class CluwneSystem : EntitySystem
         if (_robustRandom.Prob(component.GiggleRandomChance))
         {
             _audio.PlayPvs(component.SpawnSound, uid);
-            _chat.TrySendInGameICMessage(uid, "honks", InGameICChatType.Emote, ChatTransmitRange.Normal);
+            // Probably should be localized
+            _chatManager.SendChannelMessage("honks", EmoteChannel, null, uid);
         }
 
         else if (_robustRandom.Prob(component.KnockChance))
         {
             _audio.PlayPvs(component.KnockSound, uid);
             _stunSystem.TryParalyze(uid, TimeSpan.FromSeconds(component.ParalyzeTime), true);
-            _chat.TrySendInGameICMessage(uid, "spasms", InGameICChatType.Emote, ChatTransmitRange.Normal);
+            // Probably should be localized
+            _chatManager.SendChannelMessage("spasms", EmoteChannel, null, uid);
         }
     }
 

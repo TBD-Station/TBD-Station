@@ -58,7 +58,6 @@ public sealed partial class LawDisplay : Control
         localButton.OnPressed += _ =>
         {
             _chatManager.SendMessage($"{lawIdentifierPlaintext}: {lawDescriptionPlaintext}", ChatSelectChannel.Local);
-            _nextAllowedPress[localButton] = _timing.CurTime + PressCooldown;
         };
 
         LawAnnouncementButtons.AddChild(localButton);
@@ -87,9 +86,19 @@ public sealed partial class LawDisplay : Control
                 switch (radioChannel)
                 {
                     case SharedChatSystem.CommonChannel:
-                        _chatManager.SendMessage($"{SharedChatSystem.RadioCommonPrefix} {lawIdentifierPlaintext}: {lawDescriptionPlaintext}", ChatSelectChannel.Radio); break;
+                        _chatManager.SendMessage(
+                            $"{SharedChatSystem.RadioCommonPrefix} {lawIdentifierPlaintext}: {lawDescriptionPlaintext}",
+                            ChatSelectChannel.Radio,
+                            radioChannelProto
+                        );
+                        break;
                     default:
-                        _chatManager.SendMessage($"{SharedChatSystem.RadioChannelPrefix}{radioChannelProto.KeyCode} {lawIdentifierPlaintext}: {lawDescriptionPlaintext}", ChatSelectChannel.Radio); break;
+                        _chatManager.SendMessage(
+                            $"{SharedChatSystem.RadioChannelPrefix}{radioChannelProto.KeyCode} {lawIdentifierPlaintext}: {lawDescriptionPlaintext}",
+                            ChatSelectChannel.Radio,
+                            radioChannelProto
+                        );
+                        break;
                 }
                 _nextAllowedPress[radioChannelButton] = _timing.CurTime + PressCooldown;
             };

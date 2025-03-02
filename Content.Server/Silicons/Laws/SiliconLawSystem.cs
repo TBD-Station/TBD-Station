@@ -5,7 +5,8 @@ using Content.Server.Radio.Components;
 using Content.Server.Roles;
 using Content.Server.Station.Systems;
 using Content.Shared.Administration;
-using Content.Shared.Chat;
+using Content.Shared.Chat.Prototypes;
+using Content.Shared.Emag.Components;
 using Content.Shared.Emag.Systems;
 using Content.Shared.GameTicking;
 using Content.Shared.Mind;
@@ -20,12 +21,15 @@ using Robust.Shared.Containers;
 using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Toolshed;
+using Robust.Shared.Audio;
 
 namespace Content.Server.Silicons.Laws;
 
 /// <inheritdoc/>
 public sealed class SiliconLawSystem : SharedSiliconLawSystem
 {
+    private static readonly ProtoId<CommunicationChannelPrototype> GameMessageChannel = "GameMessage";
+
     [Dependency] private readonly IChatManager _chatManager = default!;
     [Dependency] private readonly SharedMindSystem _mind = default!;
     [Dependency] private readonly IPrototypeManager _prototype = default!;
@@ -64,7 +68,7 @@ public sealed class SiliconLawSystem : SharedSiliconLawSystem
 
         var msg = Loc.GetString("laws-notify");
         var wrappedMessage = Loc.GetString("chat-manager-server-wrap-message", ("message", msg));
-        _chatManager.ChatMessageToOne(ChatChannel.Server, msg, wrappedMessage, default, false, actor.PlayerSession.Channel, colorOverride: Color.FromHex("#5ed7aa"));
+        _chatManager.SendChannelMessage(wrappedMessage, GameMessageChannel, null, null, [actor.PlayerSession]);
 
         if (!TryComp<SiliconLawProviderComponent>(uid, out var lawcomp))
             return;
@@ -74,7 +78,7 @@ public sealed class SiliconLawSystem : SharedSiliconLawSystem
 
         var modifedLawMsg = Loc.GetString("laws-notify-subverted");
         var modifiedLawWrappedMessage = Loc.GetString("chat-manager-server-wrap-message", ("message", modifedLawMsg));
-        _chatManager.ChatMessageToOne(ChatChannel.Server, modifedLawMsg, modifiedLawWrappedMessage, default, false, actor.PlayerSession.Channel, colorOverride: Color.Red);
+        _chatManager.SendChannelMessage(modifiedLawWrappedMessage, GameMessageChannel, null, null, [actor.PlayerSession]);
     }
 
     private void OnLawProviderMindAdded(Entity<SiliconLawProviderComponent> ent, ref MindAddedMessage args)
@@ -252,7 +256,7 @@ public sealed class SiliconLawSystem : SharedSiliconLawSystem
 
         var msg = Loc.GetString("laws-update-notify");
         var wrappedMessage = Loc.GetString("chat-manager-server-wrap-message", ("message", msg));
-        _chatManager.ChatMessageToOne(ChatChannel.Server, msg, wrappedMessage, default, false, actor.PlayerSession.Channel, colorOverride: Color.Red);
+        _chatManager.SendChannelMessage(wrappedMessage, "GameMessage", null, null, new HashSet<ICommonSession>() { actor.PlayerSession });
 
         if (cue != null && _mind.TryGetMind(uid, out var mindId, out _))
             _roles.MindPlaySound(mindId, cue);

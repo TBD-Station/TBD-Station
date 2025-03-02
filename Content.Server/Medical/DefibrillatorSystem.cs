@@ -190,8 +190,7 @@ public sealed class DefibrillatorSystem : EntitySystem
         var dead = true;
         if (_rotting.IsRotten(target))
         {
-            _chatManager.TrySendInGameICMessage(uid, Loc.GetString("defibrillator-rotten"),
-                InGameICChatType.Speak, true);
+            _chatManager.TrySendInGameICMessage(uid, Loc.GetString("defibrillator-rotten"));
         }
         else if (TryComp<UnrevivableComponent>(target, out var unrevivable))
         {
@@ -223,8 +222,7 @@ public sealed class DefibrillatorSystem : EntitySystem
             }
             else
             {
-                _chatManager.TrySendInGameICMessage(uid, Loc.GetString("defibrillator-no-mind"),
-                    InGameICChatType.Speak, true);
+                _chatManager.TrySendInGameICMessage(uid, Loc.GetString("defibrillator-no-mind"));
             }
         }
 

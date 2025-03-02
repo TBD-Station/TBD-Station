@@ -1,7 +1,6 @@
-using System.Linq;
 using Content.Server.Chat.Managers;
 using Content.Server.Chat.Systems;
-using Content.Shared.Chat;
+using Content.Shared.Chat.Prototypes;
 using Content.Shared.Mind;
 using Content.Shared.Roles;
 using Content.Shared.Silicons.StationAi;
@@ -9,13 +8,16 @@ using Content.Shared.StationAi;
 using Robust.Shared.Audio;
 using Robust.Shared.Map.Components;
 using Robust.Shared.Player;
-using static Content.Server.Chat.Systems.ChatSystem;
+using Robust.Shared.Prototypes;
 
 namespace Content.Server.Silicons.StationAi;
 
 public sealed class StationAiSystem : SharedStationAiSystem
 {
-    [Dependency] private readonly IChatManager _chats = default!;
+    private static readonly ProtoId<CommunicationChannelPrototype> GameMessageChannel = "GameMessage";
+    private static readonly ProtoId<CommunicationChannelPrototype> SiliconChannel = "AIChannel";
+
+    [Dependency] private readonly IChatManager _chatManager = default!;
     [Dependency] private readonly EntityLookupSystem _lookup = default!;
     [Dependency] private readonly SharedTransformSystem _xforms = default!;
     [Dependency] private readonly SharedMindSystem _mind = default!;
@@ -57,7 +59,7 @@ public sealed class StationAiSystem : SharedStationAiSystem
             if (range < 0 || range > ev.VoiceRange)
                 continue;
 
-            ev.Recipients.TryAdd(actor.PlayerSession, new ICChatRecipientData(range, false));
+            ev.Recipients.TryAdd(actor.PlayerSession, new ChatSystem.ICChatRecipientData(range, false));
         }
     }
 
@@ -94,7 +96,7 @@ public sealed class StationAiSystem : SharedStationAiSystem
 
         var msg = Loc.GetString("ai-consciousness-download-warning");
         var wrappedMessage = Loc.GetString("chat-manager-server-wrap-message", ("message", msg));
-        _chats.ChatMessageToOne(ChatChannel.Server, msg, wrappedMessage, default, false, actor.PlayerSession.Channel, colorOverride: Color.Red);
+        _chatManager.SendChannelMessage(wrappedMessage, GameMessageChannel, null, null, [actor.PlayerSession]);
 
         if (cue != null && _mind.TryGetMind(uid, out var mindId, out _))
             _roles.MindPlaySound(mindId, cue);
@@ -111,6 +113,7 @@ public sealed class StationAiSystem : SharedStationAiSystem
         _lookup.GetChildEntities(xform.GridUid.Value, _ais);
         var filter = Filter.Empty();
 
+        /* CHAT-TODO: Should be the AI channel
         foreach (var ai in _ais)
         {
             // TODO: Filter API?
@@ -118,7 +121,7 @@ public sealed class StationAiSystem : SharedStationAiSystem
             {
                 filter.AddPlayer(actorComp.PlayerSession);
             }
-        }
+        }*/
 
         // TEST
         // filter = Filter.Broadcast();
@@ -127,7 +130,7 @@ public sealed class StationAiSystem : SharedStationAiSystem
         var tile = Maps.LocalToTile(xform.GridUid.Value, grid, xform.Coordinates);
         var msg = Loc.GetString("ai-wire-snipped", ("coords", tile));
 
-        _chats.ChatMessageToMany(ChatChannel.Notifications, msg, msg, entity, false, true, filter.Recipients.Select(o => o.Channel));
+        _chatManager.SendChannelMessage(msg, SiliconChannel, null, null);
         // Apparently there's no sound for this.
     }
 }

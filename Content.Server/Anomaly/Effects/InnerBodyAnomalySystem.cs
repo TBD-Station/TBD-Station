@@ -8,19 +8,22 @@ using Content.Shared.Anomaly;
 using Content.Shared.Anomaly.Components;
 using Content.Shared.Anomaly.Effects;
 using Content.Shared.Body.Components;
-using Content.Shared.Chat;
+using Content.Shared.Chat.Prototypes;
 using Content.Shared.Database;
 using Content.Shared.Mobs;
 using Content.Shared.Popups;
 using Content.Shared.Whitelist;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Physics.Events;
+using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
 
 namespace Content.Server.Anomaly.Effects;
 
 public sealed class InnerBodyAnomalySystem : SharedInnerBodyAnomalySystem
 {
+    private static readonly ProtoId<CommunicationChannelPrototype> GameMessageChannel = "GameMessage";
+
     [Dependency] private readonly IAdminLogManager _adminLog = default!;
     [Dependency] private readonly AnomalySystem _anomaly = default!;
     [Dependency] private readonly SharedAudioSystem _audio = default!;
@@ -106,13 +109,7 @@ public sealed class InnerBodyAnomalySystem : SharedInnerBodyAnomalySystem
         {
             var message = Loc.GetString(ent.Comp.StartMessage);
             var wrappedMessage = Loc.GetString("chat-manager-server-wrap-message", ("message", message));
-            _chat.ChatMessageToOne(ChatChannel.Server,
-                message,
-                wrappedMessage,
-                default,
-                false,
-                mindComponent.Session.Channel,
-                _messageColor);
+            _chat.SendChannelMessage(wrappedMessage, GameMessageChannel, null, null, new HashSet<ICommonSession>() { mindComponent.Session });
 
             _popup.PopupEntity(message, ent, ent, PopupType.MediumCaution);
 
@@ -167,13 +164,7 @@ public sealed class InnerBodyAnomalySystem : SharedInnerBodyAnomalySystem
             return;
 
         var wrappedMessage = Loc.GetString("chat-manager-server-wrap-message", ("message", message));
-        _chat.ChatMessageToOne(ChatChannel.Server,
-            message,
-            wrappedMessage,
-            default,
-            false,
-            mindComponent.Session.Channel,
-            _messageColor);
+        _chat.SendChannelMessage(wrappedMessage, GameMessageChannel, null, null, new HashSet<ICommonSession>() { mindComponent.Session });
 
         _popup.PopupEntity(message, ent, ent, PopupType.MediumCaution);
     }
@@ -218,13 +209,7 @@ public sealed class InnerBodyAnomalySystem : SharedInnerBodyAnomalySystem
         {
             var message = Loc.GetString(ent.Comp.EndMessage);
             var wrappedMessage = Loc.GetString("chat-manager-server-wrap-message", ("message", message));
-            _chat.ChatMessageToOne(ChatChannel.Server,
-                message,
-                wrappedMessage,
-                default,
-                false,
-                mindComponent.Session.Channel,
-                _messageColor);
+            _chat.SendChannelMessage(wrappedMessage, GameMessageChannel, null, null, new HashSet<ICommonSession>() { mindComponent.Session });
 
 
             _popup.PopupEntity(message, ent, ent, PopupType.MediumCaution);

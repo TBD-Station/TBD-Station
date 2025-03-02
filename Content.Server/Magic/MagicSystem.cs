@@ -25,7 +25,7 @@ public sealed class MagicSystem : SharedMagicSystem
 
     private void OnSpellSpoken(ref SpeakSpellEvent args)
     {
-        _chat.TrySendInGameICMessage(args.Performer, Loc.GetString(args.Speech), InGameICChatType.Speak, false);
+        _chat.TrySendInGameICMessage(args.Performer, Loc.GetString(args.Speech));
     }
 
     public override void OnVoidApplause(VoidApplauseSpellEvent ev)

@@ -1,4 +1,4 @@
-﻿using Content.Server.Speech.Prototypes;
+﻿using Content.Shared.Speech.Components;
 using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom.Prototype;
 
 namespace Content.Server.Speech.Components;
