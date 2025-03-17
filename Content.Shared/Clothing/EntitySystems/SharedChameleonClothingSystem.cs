@@ -139,7 +139,7 @@ public abstract class SharedChameleonClothingSystem : EntitySystem
         if (!proto.TryGetComponent(out TagComponent? tag, _factory) || !_tag.HasTag(tag, "WhitelistChameleon"))
             return false;
 
-        if (requiredTags != null && requiredTags.All(requiredTag => !_tag.HasTag(tag, requiredTag)))
+        if (requiredTags != null && requiredTags.Any() && requiredTags.All(requiredTag => !_tag.HasTag(tag, requiredTag)))
             return false;
 
         // check if it's valid clothing
