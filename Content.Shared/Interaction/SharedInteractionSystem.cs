@@ -1435,6 +1435,7 @@ namespace Content.Shared.Interaction
 
             var ev = new GetInteractingEntitiesEvent(target, result);
             RaiseLocalEvent(ref ev);
+            RaiseLocalEvent(target, ref ev);
         }
 
         [Obsolete("Use ActionBlockerSystem")]
