@@ -5,6 +5,7 @@ using Content.Shared.Administration.Logs;
 using Content.Shared.Alert;
 using Content.Shared.Buckle.Components;
 using Content.Shared.Cuffs.Components;
+using Content.Shared.Damage.Systems;
 using Content.Shared.Database;
 using Content.Shared.DoAfter;
 using Content.Shared.Hands;
@@ -52,6 +53,7 @@ namespace Content.Shared.Cuffs
         [Dependency] private readonly SharedInteractionSystem _interaction = default!;
         [Dependency] private readonly SharedPopupSystem _popup = default!;
         [Dependency] private readonly SharedTransformSystem _transform = default!;
+        [Dependency] private readonly StaminaSystem _stamina = default!;
         [Dependency] private readonly UseDelaySystem _delay = default!;
 
         public override void Initialize()
@@ -128,6 +130,12 @@ namespace Content.Shared.Cuffs
 
                 cuffable.CanStillInteract = false;
                 Dirty(args.User, cuffable);
+
+                // User will take self-inflicted stamina damage if attempting to uncuff themselves. This should happen even if the uncuff attempt fails.
+                if (TryComp<HandcuffComponent>(args.Cuffs, out var handcuffComp))
+                {
+                    _stamina.TakeStaminaDamage(args.Target, handcuffComp.SelfUncuffStamDamage, visual: true, source: args.User);
+                }
             }
             else
             {
@@ -604,7 +612,7 @@ namespace Content.Shared.Cuffs
             if (!Resolve(cuffsToRemove.Value, ref cuff))
                 return;
 
-            var attempt = new UncuffAttemptEvent(user, target);
+            var attempt = new UncuffAttemptEvent(user, target, cuffsToRemove.Value);
             RaiseLocalEvent(user, ref attempt, true);
 
             if (attempt.Cancelled)
@@ -690,7 +698,7 @@ namespace Content.Shared.Cuffs
 
             if (user != null)
             {
-                var attempt = new UncuffAttemptEvent(user.Value, target);
+                var attempt = new UncuffAttemptEvent(user.Value, target, cuffsToRemove);
                 RaiseLocalEvent(user.Value, ref attempt);
                 if (attempt.Cancelled)
                     return;
