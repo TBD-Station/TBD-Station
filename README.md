@@ -1,12 +1,24 @@
-Downstream of Wizden made to be maximally random and fair. Aims to not need admins through karma system.
+# To Be Determined Station
+
+This station is intended to have more randomness. This will mainly be done through randomizing various values (Damage of items, maximum charge, item material costs, etc.) at a set interval, likely weekly. 
+
+The repository is a downstream of the [offical Space Station 14 repository](https://github.com/space-wizards/space-station-14) and modified to be maximally random and fair.
+
+If you want to join the community feel free to join the server on the launcher or join the [discord](https://discord.gg/N6yaq2d8pe).
+
+## Current Main Goals
+
+- Have enforcement of rules be made via code systems rather than admin intervention. One such example is the karma system which rewards players for playing "properly" and punishes them for "misbehaving".
+- Randomness. As described in the description there will be randomized values which can sometimes be small, medium, or large deviations from the defualt value. Large deviations will noticably affect rounds and items affected by them can become round changing items.
+- Admins are there to ensure the quality of the community and to stop anyone from exploiting on the server. 
 
 ## Documentation/Wiki
 
-Wizden Wiki: [docs site](https://docs.spacestation14.io/) has documentation on SS14s content, engine, game design and more. We also have lots of resources for new contributors to the project.
+Space Station 14 Wiki: [docs site](https://docs.spacestation14.io/) has documentation on SS14s content, engine, game design and more. We also have lots of resources for new contributors to the project.
 
 ## Contributing
 
-tbd
+To Be Determined.
 
 ## Building
 
