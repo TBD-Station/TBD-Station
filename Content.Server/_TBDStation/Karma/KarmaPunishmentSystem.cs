@@ -133,9 +133,9 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
         if (karmaLost >= 20)
         { // If you lose a lot of karma make a worse punishment more likely.
             float badMult = karmaLost / 10f; // >= 2
-            nothing = (int) (nothing / (2 * badMult));
-            nothing = (int) (nasty * badMult);
-            nothing = (int) (kill * badMult);
+            nothing = (int)(nothing / (2 * badMult));
+            nothing = (int)(nasty * badMult);
+            nothing = (int)(kill * badMult);
         }
         int totalWeight = nothing + bitter + harsh + nasty + harm + kill;
 
@@ -531,6 +531,7 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
             (KillSign, nameof(KillSign)),
             (KillPointingArrow, nameof(KillPointingArrow)),
             (KillBurn, nameof(KillBurn)),
+            (KillSuperBonk, nameof(KillSuperBonk)),
         };
 
         var (smite, smiteName) = smites[_random.Next(smites.Length)];
@@ -707,6 +708,12 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
             return true;
         }
         return false;
+    }
+
+    private bool KillSuperBonk(EntityUid target)
+    {
+        _superBonkSystem.StartSuperBonk(target, stopWhenDead: true);
+        return true;
     }
     #endregion
     #region Removed
