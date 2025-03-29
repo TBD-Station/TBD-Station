@@ -19,6 +19,8 @@ using Robust.Server.Player;
 using Content.Server._TBDStation.ServerKarma; // TBDStation Edit
 using Robust.Shared.Configuration;
 using Robust.Shared.Utility;
+using Content.Shared.Administration.Logs; // TBDStation Edit
+using Content.Shared.Database; // TBDStation Edit
 
 namespace Content.Server.Objectives;
 
@@ -32,6 +34,7 @@ public sealed class ObjectivesSystem : SharedObjectivesSystem
     [Dependency] private readonly SharedJobSystem _job = default!;
     [Dependency] private readonly IConfigurationManager _cfg = default!;
     [Dependency] private readonly ServerKarmaManager _karmaMan = default!; // TBDStation Edit
+    [Dependency] private readonly ISharedAdminLogManager _adminLogger = default!; // TBDStation Edit
 
     private IEnumerable<string>? _objectives;
 
@@ -185,8 +188,12 @@ public sealed class ObjectivesSystem : SharedObjectivesSystem
                         ));
                         completedObjectives++;
 
-                        if (userid.HasValue) // TBDStation Edit
+                        if (userid.HasValue) {// TBDStation Edit
+                            _adminLogger.Add(LogType.Karma,
+                            LogImpact.Medium,
+                            $"{userid} gained 5 karma for a completed objective."); // TBDStation Edit
                             _karmaMan.AddKarma(userid.Value, 5); // TBDStation Edit
+                        } // TBDStation Edit
                     }
                     else
                     {
