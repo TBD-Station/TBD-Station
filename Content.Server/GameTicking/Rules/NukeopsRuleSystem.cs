@@ -420,6 +420,9 @@ public sealed class NukeopsRuleSystem : GameRuleSystem<NukeopsRuleComponent>
         {
             if (nuke.Status == NukeStatus.ARMED)
                 return;
+            // If we're bypassing the requirement for a nuke disk in order to arm/disarm the nuke, don't end the round. This makes sure that disarming the nuke doesn't end the round after a nuke calibration.
+            else if (nuke.DiskBypassEnabled)
+                return;
         }
 
         var shuttle = GetShuttle((ent, ent));
