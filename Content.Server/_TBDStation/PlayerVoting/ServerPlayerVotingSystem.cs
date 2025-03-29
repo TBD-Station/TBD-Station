@@ -5,6 +5,7 @@ using Content.Shared.Database;
 using Content.Shared.GameTicking;
 using Content.Shared.PlayerVoting;
 using Content.Shared.Popups;
+using Robust.Server.Player;
 using Robust.Shared.Network;
 
 
@@ -15,6 +16,7 @@ public sealed class ServerPlayerVotingSystem : EntitySystem
     [Dependency] private readonly ServerKarmaManager _karmaMan = default!;
     [Dependency] private readonly ISharedAdminLogManager _adminLogger = default!;
     [Dependency] private readonly PopupSystem _popupSystem = default!;
+    [Dependency] private readonly IPlayerManager _players = default!;
     // Target {Voter, vote}
     private Dictionary<NetUserId, Dictionary<NetUserId, int>> _storedVotes = new Dictionary<NetUserId, Dictionary<NetUserId, int>>();
     public override void Initialize()
@@ -33,8 +35,12 @@ public sealed class ServerPlayerVotingSystem : EntitySystem
             _storedVotes[ev.Target] = new Dictionary<NetUserId, int>();
         _storedVotes[ev.Target][ev.Voter] = ev.Vote;
 
-        // if (ev.VoterCreature != null)
-        //     _popupSystem.PopupEntity($"{ev.Vote} Voted!", new EntityUid(ev.VoterCreature.Value), new EntityUid(ev.VoterCreature.Value), PopupType.Medium);
+        if (_players.TryGetSessionById(ev.Voter, out var userSession))
+            if (userSession.AttachedEntity.HasValue)
+            {
+                var userEnt = userSession.AttachedEntity.Value;
+                _popupSystem.PopupEntity($"{ev.Vote} Voted!", userEnt, userEnt, PopupType.Medium);
+            }
     }
 
     private void OnRoundEndCleanup(RoundRestartCleanupEvent ev)

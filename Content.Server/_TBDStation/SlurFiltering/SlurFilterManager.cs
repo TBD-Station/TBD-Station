@@ -9,10 +9,7 @@ namespace Content.Server._TBDStation.SlurFilter
     public sealed class SlurFilterManager : IPostInjectInit
     {
         [Dependency] private readonly IChatManager _chatManager = default!;
-
-        private static readonly string[] Words = new string[] { "molest", "cum" };
-        private static readonly string Pattern = string.Join("|", Words);
-        // private static readonly string Pattern = @""
+        private static readonly string Pattern = @"badword";
         private static readonly Regex _slurRegex = new Regex(Pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         public void PostInject()
