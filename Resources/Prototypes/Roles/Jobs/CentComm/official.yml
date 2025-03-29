@@ -12,6 +12,7 @@
   - AllAccess
   access:
   - CentralCommand
+  karmaMult: 0.2 #TBD content
 
 - type: startingGear
   id: CentcomGear

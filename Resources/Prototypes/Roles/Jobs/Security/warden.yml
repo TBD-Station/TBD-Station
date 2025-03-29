@@ -24,6 +24,7 @@
   special:
   - !type:AddImplantSpecial
     implants: [ MindShieldImplant ]
+  karmaMult: 0.5 #TBD content
 
 - type: startingGear
   id: WardenGear

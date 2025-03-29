@@ -189,6 +189,9 @@ namespace Content.Server.Database
             ImmutableTypedHwid? hwId);
         Task<PlayerRecord?> GetPlayerRecordByUserName(string userName, CancellationToken cancel = default);
         Task<PlayerRecord?> GetPlayerRecordByUserId(NetUserId userId, CancellationToken cancel = default);
+        Task<int> GetServerKarma(NetUserId userId); // TBDStation
+        Task SetServerKarma(NetUserId userId, int karma); // TBDStation
+
         #endregion
 
         #region Connection Logs
@@ -635,6 +638,17 @@ namespace Content.Server.Database
         {
             DbReadOpsMetric.Inc();
             return RunDbCommand(() => _db.GetPlayerRecordByUserId(userId, cancel));
+        }
+
+        public Task<int> GetServerKarma(NetUserId userId) // TBDStation
+        {
+            DbReadOpsMetric.Inc();
+            return RunDbCommand(() => _db.GetServerKarma(userId));
+        }
+        public Task SetServerKarma(NetUserId userId, int currency) // TBDStation
+        {
+            DbReadOpsMetric.Inc();
+            return RunDbCommand(() => _db.SetServerKarma(userId, currency));
         }
 
         public Task<int> AddConnectionLogAsync(

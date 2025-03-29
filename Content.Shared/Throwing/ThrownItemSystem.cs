@@ -9,6 +9,7 @@ using Robust.Shared.Physics.Components;
 using Robust.Shared.Physics.Events;
 using Robust.Shared.Physics.Systems;
 using Robust.Shared.Timing;
+using Content.Shared._TBDStation.ServerKarma.Events; // TBDStation Edit
 
 namespace Content.Shared.Throwing
 {
@@ -134,8 +135,11 @@ namespace Content.Shared.Throwing
         public void ThrowCollideInteraction(ThrownItemComponent component, EntityUid thrown, EntityUid target)
         {
             if (component.Thrower is not null)
+            {
                 _adminLogger.Add(LogType.ThrowHit, LogImpact.Low,
                     $"{ToPrettyString(thrown):thrown} thrown by {ToPrettyString(component.Thrower.Value):thrower} hit {ToPrettyString(target):target}.");
+                RaiseLocalEvent(new PlayerKarmaHitEvent(8, component.Thrower.Value, target)); // TBDStation Edit // TODO: get actuall damage from the thrown item
+            }
 
             RaiseLocalEvent(target, new ThrowHitByEvent(thrown, target, component), true);
             RaiseLocalEvent(thrown, new ThrowDoHitEvent(thrown, target, component), true);

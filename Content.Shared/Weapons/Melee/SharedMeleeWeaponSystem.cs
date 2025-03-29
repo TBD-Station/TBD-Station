@@ -27,6 +27,7 @@ using Robust.Shared.Physics.Systems;
 using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Timing;
+using Content.Shared._TBDStation.ServerKarma.Events; // TBDStation Edit
 using ItemToggleMeleeWeaponComponent = Content.Shared.Item.ItemToggle.Components.ItemToggleMeleeWeaponComponent;
 
 namespace Content.Shared.Weapons.Melee;
@@ -59,6 +60,7 @@ public abstract class SharedMeleeWeaponSystem : EntitySystem
     /// If an attack is released within this buffer it's assumed to be full damage.
     /// </summary>
     public const float GracePeriod = 0.05f;
+    public bool serverRan = false; // TBDStation Edit
 
     public override void Initialize()
     {
@@ -534,6 +536,11 @@ public abstract class SharedMeleeWeaponSystem : EntitySystem
                     $"{ToPrettyString(user):actor} melee attacked (light) {ToPrettyString(target.Value):subject} using {ToPrettyString(meleeUid):tool} and dealt {damageResult.GetTotal():damage} damage");
             }
 
+            if (serverRan) // TBDStation Edit
+            {
+                var textEv = new PlayerKarmaHitEvent(damageResult.GetTotal(), user, target.Value);
+                RaiseLocalEvent(textEv);
+            }
         }
 
         _meleeSound.PlayHitSound(target.Value, user, GetHighestDamageSound(modifiedDamage, _protoManager), hitEvent.HitSoundOverride, component);
@@ -689,6 +696,12 @@ public abstract class SharedMeleeWeaponSystem : EntitySystem
                     AdminLogger.Add(LogType.MeleeHit,
                         LogImpact.Medium,
                         $"{ToPrettyString(user):actor} melee attacked (heavy) {ToPrettyString(entity):subject} using {ToPrettyString(meleeUid):tool} and dealt {damageResult.GetTotal():damage} damage");
+                }
+
+                if (serverRan) // TBDStation Edit
+                {
+                    var textEv = new PlayerKarmaHitEvent(damageResult.GetTotal(), user, entity);
+                    RaiseLocalEvent(textEv);
                 }
             }
         }

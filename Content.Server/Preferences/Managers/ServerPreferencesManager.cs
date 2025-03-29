@@ -10,6 +10,7 @@ using Robust.Shared.Configuration;
 using Robust.Shared.Network;
 using Robust.Shared.Player;
 using Robust.Shared.Utility;
+using Content.Server._TBDStation.SlurFilter; // TBDStation
 
 namespace Content.Server.Preferences.Managers
 {
@@ -26,6 +27,7 @@ namespace Content.Server.Preferences.Managers
         [Dependency] private readonly IDependencyCollection _dependencies = default!;
         [Dependency] private readonly ILogManager _log = default!;
         [Dependency] private readonly UserDbDataManager _userDb = default!;
+        [Dependency] private readonly SlurFilterManager _slurFilterMan = default!; // TBDStation
 
         // Cache player prefs on the server so we don't need as much async hell related to them.
         private readonly Dictionary<NetUserId, PlayerPrefData> _cachedPlayerPrefs =
@@ -100,6 +102,9 @@ namespace Content.Server.Preferences.Managers
 
             var curPrefs = prefsData.Prefs!;
             var session = _playerManager.GetSessionById(userId);
+
+            if (_slurFilterMan.ContainsSlur(session, profile.Name)) // TBDStation Edit
+                return;
 
             profile.EnsureValid(session, _dependencies);
 
