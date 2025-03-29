@@ -37,6 +37,7 @@
   - !type:AddComponentSpecial
     components:
       - type: CommandStaff
+  karmaMult: 0.2 #TBD content
 
 - type: startingGear
   id: HoSGear

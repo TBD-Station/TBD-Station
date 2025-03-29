@@ -20,6 +20,7 @@ using Content.Shared.IdentityManagement;
 using Content.Shared.Popups;
 using Robust.Server.GameObjects;
 using Robust.Shared.Configuration;
+using Content.Server._TBDStation.SlurFilter; // TBDStation
 
 namespace Content.Server.Communications
 {
@@ -36,6 +37,7 @@ namespace Content.Server.Communications
         [Dependency] private readonly UserInterfaceSystem _uiSystem = default!;
         [Dependency] private readonly IConfigurationManager _cfg = default!;
         [Dependency] private readonly IAdminLogManager _adminLogger = default!;
+        [Dependency] private readonly SlurFilterManager _slurFilterMan = default!; // TBDStation
 
         private const float UIUpdateInterval = 5.0f;
 
@@ -238,6 +240,9 @@ namespace Content.Server.Communications
                 {
                     return;
                 }
+
+                if (_slurFilterMan.ContainsSlur(msg)) // TBDStation Edit
+                    return; // TBDStation Edit
 
                 if (!CanUse(mob, uid))
                 {

@@ -16,6 +16,7 @@ using Content.Shared.CCVar;
 using Content.Shared.Prototypes;
 using Content.Shared.Roles.Jobs;
 using Robust.Server.Player;
+using Content.Server._TBDStation.ServerKarma; // TBDStation Edit
 using Robust.Shared.Configuration;
 using Robust.Shared.Utility;
 
@@ -30,6 +31,7 @@ public sealed class ObjectivesSystem : SharedObjectivesSystem
     [Dependency] private readonly EmergencyShuttleSystem _emergencyShuttle = default!;
     [Dependency] private readonly SharedJobSystem _job = default!;
     [Dependency] private readonly IConfigurationManager _cfg = default!;
+    [Dependency] private readonly ServerKarmaManager _karmaMan = default!; // TBDStation Edit
 
     private IEnumerable<string>? _objectives;
 
@@ -136,6 +138,7 @@ public sealed class ObjectivesSystem : SharedObjectivesSystem
             if (!TryComp<MindComponent>(mindId, out var mind))
                 continue;
 
+            var userid = mind.OriginalOwnerUserId; // TBDStation
             var title = GetTitle((mindId, mind), name);
             var custody = IsInCustody(mindId, mind) ? Loc.GetString("objectives-in-custody") : string.Empty;
 
@@ -181,6 +184,9 @@ public sealed class ObjectivesSystem : SharedObjectivesSystem
                             ("markupColor", "green")
                         ));
                         completedObjectives++;
+
+                        if (userid.HasValue) // TBDStation Edit
+                            _karmaMan.AddKarma(userid.Value, 5); // TBDStation Edit
                     }
                     else
                     {

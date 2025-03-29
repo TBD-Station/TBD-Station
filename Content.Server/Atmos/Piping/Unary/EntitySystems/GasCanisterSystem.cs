@@ -19,6 +19,7 @@ using Robust.Server.GameObjects;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Containers;
 using Robust.Shared.Player;
+using Content.Shared._TBDStation.ServerKarma.Events; // TBDStation
 
 namespace Content.Server.Atmos.Piping.Unary.EntitySystems;
 
@@ -140,6 +141,14 @@ public sealed class GasCanisterSystem : EntitySystem
             LogType.CanisterValve,
             impact,
             $"{ToPrettyString(args.Actor):player} {(args.Valve ? "opened" : "closed")} the valve on {ToPrettyString(uid):canister} to {(hasItem ? "inserted tank" : "environment")} while it contained [{GetContainedGasesString((uid, canister))}]");
+
+        var isOpenToEnviroment = impact == LogImpact.High && args.Valve; // TBDStation
+        var sumGoodGas = canister.Air.GetMoles(Gas.Oxygen) + canister.Air.GetMoles(Gas.Nitrogen); // TBDStation
+        var isMostlyBadGas = sumGoodGas < 0.98 * canister.Air.TotalMoles; // TBDStation
+        if (isOpenToEnviroment && isMostlyBadGas) // TBDStation
+        {
+            RaiseLocalEvent(new PlayerKarmaGriefEvent(args.Actor, PlayerKarmaGriefEvent.GriefType.OpenToxicCanister));
+        }
 
         canister.ReleaseValve = args.Valve;
         DirtyUI(uid, canister);

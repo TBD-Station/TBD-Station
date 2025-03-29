@@ -1,6 +1,7 @@
 using Content.Shared.Database;
 using Content.Shared.Research.Components;
 using Content.Shared.Research.Prototypes;
+using Content.Shared._TBDStation.ServerKarma.Events; // TBDStation
 using JetBrains.Annotations;
 
 namespace Content.Server.Research.Systems;
@@ -127,6 +128,8 @@ public sealed partial class ResearchSystem
         }
         Dirty(uid, component);
 
+        var ev2 = new DepStatDEvent(1, DepStatDEvent.DepStatKey.ResearchTech); // TBDStaion
+        RaiseLocalEvent(ev2); // TBDStaion
         var ev = new TechnologyDatabaseModifiedEvent();
         RaiseLocalEvent(uid, ref ev);
     }

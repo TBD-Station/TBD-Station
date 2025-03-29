@@ -5,6 +5,7 @@ using Content.Server.Atmos.Components;
 using Content.Server.Chat.Managers;
 using Content.Server.NodeContainer.EntitySystems;
 using Content.Server.NPC.Pathfinding;
+using Content.Shared._TBDStation.ServerKarma.Events; // TBDStation Edit
 using Content.Shared.Camera;
 using Content.Shared.CCVar;
 using Content.Shared.Damage;
@@ -262,6 +263,7 @@ public sealed partial class ExplosionSystem : SharedExplosionSystem
                 : LogImpact.High;
             _adminLogger.Add(LogType.Explosion, logImpact,
                 $"{ToPrettyString(user.Value):user} caused {ToPrettyString(uid):entity} to explode ({typeId}) at Pos:{(posFound ? $"{gridPos:coordinates}" : "[Grid or Map not found]")} with intensity {totalIntensity} slope {slope}");
+            RaiseLocalEvent(new PlayerKarmaGriefEvent(user.Value, PlayerKarmaGriefEvent.GriefType.Explosion)); // TBDStation Edit
         }
     }
 

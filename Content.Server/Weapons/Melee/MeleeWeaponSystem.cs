@@ -1,6 +1,7 @@
 using Content.Server.Chat.Systems;
 using Content.Server.CombatMode.Disarm;
 using Content.Server.Movement.Systems;
+using Content.Server._TBDStation.ServerKarma; // TBDStation
 using Content.Shared.Actions.Events;
 using Content.Shared.Administration.Components;
 using Content.Shared.CombatMode;
@@ -38,6 +39,7 @@ public sealed class MeleeWeaponSystem : SharedMeleeWeaponSystem
 
     public override void Initialize()
     {
+        serverRan = true;
         base.Initialize();
         SubscribeLocalEvent<MeleeSpeechComponent, MeleeHitEvent>(OnSpeechHit);
         SubscribeLocalEvent<MeleeWeaponComponent, DamageExamineEvent>(OnMeleeExamineDamage);

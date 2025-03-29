@@ -153,6 +153,9 @@ namespace Content.Shared.Roles
         /// </summary>
         [DataField]
         public List<ProtoId<GuideEntryPrototype>>? Guides;
+
+        [DataField] // TBDStation Edit
+        public float KarmaMult { get; private set; } = 1; // TBDStation Edit
     }
 
     /// <summary>

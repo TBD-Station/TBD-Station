@@ -12,6 +12,7 @@
   - AllAccess
   access:
   - CentralCommand
+  karmaMult: 0 #TBD content
 
 - type: startingGear
   id: CBURNGear
