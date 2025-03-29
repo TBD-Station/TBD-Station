@@ -6,11 +6,10 @@ using Content.Client.Gameplay;
 using Content.Client.Hands;
 using Content.Client.Interaction;
 using Content.Client.Outline;
-using Content.Client.UserInterface.Controls;
 using Content.Client.UserInterface.Systems.Actions.Controls;
 using Content.Client.UserInterface.Systems.Actions.Widgets;
 using Content.Client.UserInterface.Systems.Actions.Windows;
-using Content.Client.UserInterface.Systems.Gameplay;
+using Content.Client.UserInterface.Systems.MenuBar.Widgets;
 using Content.Shared.Actions;
 using Content.Shared.Input;
 using Robust.Client.GameObjects;
@@ -57,7 +56,6 @@ public sealed class ActionUIController : UIController, IOnStateChanged<GameplayS
     private ActionsWindow? _window;
 
     private ActionsBar? ActionsBar => UIManager.GetActiveUIWidgetOrNull<ActionsBar>();
-    private MenuButton? ActionButton => UIManager.GetActiveUIWidgetOrNull<MenuBar.Widgets.GameTopMenuBar>()?.ActionButton;
 
     public bool IsDragging => _menuDragHelper.IsDragging;
 
@@ -79,27 +77,23 @@ public sealed class ActionUIController : UIController, IOnStateChanged<GameplayS
         };
     }
 
-    public override void Initialize()
-    {
-        base.Initialize();
-
-        var gameplayStateLoad = UIManager.GetUIController<GameplayStateLoadController>();
-        gameplayStateLoad.OnScreenLoad += OnScreenLoad;
-        gameplayStateLoad.OnScreenUnload += OnScreenUnload;
-    }
-
-    private void OnScreenLoad()
-    {
-       LoadGui();
-    }
-
-    private void OnScreenUnload()
-    {
-        UnloadGui();
-    }
-
     public void OnStateEntered(GameplayState state)
     {
+        _window = UIManager.CreateWindow<ActionsWindow>();
+        LayoutContainer.SetAnchorPreset(_window, LayoutContainer.LayoutPreset.CenterTop);
+
+        _window.OnOpen += SearchAndDisplay;
+        _window.ClearButton.OnPressed += OnClearPressed;
+        _window.SearchBar.OnTextChanged += OnSearchChanged;
+        _window.FilterButton.OnItemSelected += OnFilterSelected;
+
+        if (ActionsBar == null)
+            return;
+
+        RegisterActionContainer(ActionsBar.ActionsContainer);
+
+        _actionsSystem?.LinkAllActions();
+
         if (_actionsSystem != null)
         {
             _actionsSystem.OnActionAdded += OnActionAdded;
@@ -304,40 +298,6 @@ public sealed class ActionUIController : UIController, IOnStateChanged<GameplayS
         return true;
     }
 
-    public void UnloadButton()
-    {
-        if (ActionButton == null)
-        {
-            return;
-        }
-
-        ActionButton.OnPressed -= ActionButtonPressed;
-    }
-
-    public void LoadButton()
-    {
-        if (ActionButton == null)
-        {
-            return;
-        }
-
-        ActionButton.OnPressed += ActionButtonPressed;
-    }
-
-    private void OnWindowOpened()
-    {
-        if (ActionButton != null)
-            ActionButton.SetClickPressed(true);
-
-        SearchAndDisplay();
-    }
-
-    private void OnWindowClosed()
-    {
-        if (ActionButton != null)
-            ActionButton.SetClickPressed(false);
-    }
-
     public void OnStateExited(GameplayState state)
     {
         if (_actionsSystem != null)
@@ -347,6 +307,8 @@ public sealed class ActionUIController : UIController, IOnStateChanged<GameplayS
             _actionsSystem.ActionsUpdated -= OnActionsUpdated;
         }
 
+        _actionsSystem?.UnlinkAllActions();
+        _window = null;
         CommandBinds.Unregister<ActionUIController>();
     }
 
@@ -407,18 +369,15 @@ public sealed class ActionUIController : UIController, IOnStateChanged<GameplayS
         ToggleWindow();
     }
 
-    private void ToggleWindow()
+    public void ToggleWindow()
     {
         if (_window == null)
             return;
 
         if (_window.IsOpen)
-        {
             _window.Close();
-            return;
-        }
-
-        _window.Open();
+        else
+            _window.Open();
     }
 
     private void UpdateFilterLabel()
@@ -744,50 +703,6 @@ public sealed class ActionUIController : UIController, IOnStateChanged<GameplayS
     {
         _dragShadow.Texture = null;
         _dragShadow.Visible = false;
-    }
-
-    private void UnloadGui()
-    {
-        _actionsSystem?.UnlinkAllActions();
-
-        if (ActionsBar == null)
-        {
-            return;
-        }
-
-        if (_window != null)
-        {
-            _window.OnOpen -= OnWindowOpened;
-            _window.OnClose -= OnWindowClosed;
-            _window.ClearButton.OnPressed -= OnClearPressed;
-            _window.SearchBar.OnTextChanged -= OnSearchChanged;
-            _window.FilterButton.OnItemSelected -= OnFilterSelected;
-
-            _window.Dispose();
-            _window = null;
-        }
-    }
-
-    private void LoadGui()
-    {
-        UnloadGui();
-        _window = UIManager.CreateWindow<ActionsWindow>();
-        LayoutContainer.SetAnchorPreset(_window, LayoutContainer.LayoutPreset.CenterTop);
-
-        _window.OnOpen += OnWindowOpened;
-        _window.OnClose += OnWindowClosed;
-        _window.ClearButton.OnPressed += OnClearPressed;
-        _window.SearchBar.OnTextChanged += OnSearchChanged;
-        _window.FilterButton.OnItemSelected += OnFilterSelected;
-
-        if (ActionsBar == null)
-        {
-            return;
-        }
-
-        RegisterActionContainer(ActionsBar.ActionsContainer);
-
-        _actionsSystem?.LinkAllActions();
     }
 
     public void RegisterActionContainer(ActionButtonContainer container)
