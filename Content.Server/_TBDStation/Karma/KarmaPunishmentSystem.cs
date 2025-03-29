@@ -105,168 +105,100 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
 
     private void DeterminePunishment(PlayerKarmaChangeEvent ev)
     {
-        if (!ev.UserSes.AttachedEntity.HasValue)
+        if (ev.NewKarma >= ev.OldKarma || !ev.UserSes.AttachedEntity.HasValue)
             return;
         EntityUid target = ev.UserSes.AttachedEntity.Value;
-        // Wheights
-        int nothing = 0, bitter = 0, harsh = 0, nasty = 0, harm = 0, kill = 0;
-        switch (ev.NewKarma)
-        {
-            case > 0:
-                return;
-            case > -200 and <= 0:
-                nothing = 90;
-                bitter = 10;
-                break;
-            case > -600 and <= -200:
-                nothing = 75;
-                bitter = 15;
-                harsh = 5;
-                harm = 5;
-                break;
-            case > -850 and <= -600:
-                nothing = 60;
-                bitter = 15;
-                harsh = 10;
-                nasty = 2;
-                harm = 10;
-                kill = 3;
-                break;
-            case > -1000 and <= -850:
-                nothing = 40;
-                bitter = 15;
-                harsh = 15;
-                nasty = 10;
-                harm = 10;
-                kill = 10;
-                break;
-            case > -1200 and <= -1100:
-                nothing = 40;
-                bitter = 20;
-                harsh = 20;
-                harm = 10;
-                kill = 10;
-                break;
-            case <= -1200:
-                nothing = 25;
-                harsh = 25;
-                nasty = 25;
-                kill = 25;
-                break;
-            default:
-                break;
-        }
         if (!EntityManager.TryGetComponent(target, out ActorComponent? actor))
             return;
-
         var player = actor.PlayerSession;
         // 1984.
         if (HasComp<MapComponent>(target) || HasComp<MapGridComponent>(target))
             return;
 
-        int totalWheight = nothing + bitter + harsh + nasty + harm + kill;
-        int attempts = 0, i = 0;
-        string choosen_smite = "NONE";
-        bool got_smitted = false;
-        while (!got_smitted && attempts++ < 9)
+        // Pick punishment type
+        var (nothing, bitter, harm, harsh, nasty, kill) = ev.NewKarma switch
         {
-            i = _random.Next(totalWheight);
+            > 0 =>                  (0, 0, 0, 0, 0, 0),
+            > -200 and <= 0 =>      (90, 10, 0, 0, 0, 0),
+            > -600 and <= -200 =>   (75, 15, 5, 5, 0, 0),
+            > -850 and <= -600 =>   (60, 15, 10, 10, 2, 3),
+            > -1000 and <= -850 =>  (40, 15, 15, 10, 10, 10),
+            > -1200 and <= -1000 => (40, 20, 20, 10, 0, 10),
+            <= -1200 =>             (25, 0, 25, 0, 25, 25),
+        };
+
+        int totalWeight = nothing + bitter + harsh + nasty + harm + kill;
+        int attempts = 0;
+        bool gotSmitted = false;
+        while (!gotSmitted && attempts++ < 9)
+        {
+            int i = _random.Next(totalWeight);
             if (i < nothing)
                 return;
             i -= nothing;
-            if (i < bitter)
-            {
-                choosen_smite = "Bitter";
-                AnyBitterSmite(i, target, ref got_smitted);
-            }
-            i -= bitter;
-            if (i < harsh)
-            {
-                choosen_smite = "Hasrsh";
-                AnyHarshSmite(i, target, ref got_smitted);
-            }
-            i -= harsh;
-            if (i < nasty)
-            {
-                choosen_smite = "Nasty";
-                AnyNastySmite(i, target, ref got_smitted);
-            }
-            i -= nasty;
-            if (i < harm)
-            {
-                choosen_smite = "Harm";
-                AnyHarmSmite(i, target, ref got_smitted);
-            }
-            i -= harm;
-            if (i < kill)
-            {
-                choosen_smite = "Kill";
-                AnyKillSmite(i, target, ref got_smitted);
-            }
-            i -= kill;
-        }
 
-        if (got_smitted)
-        {
-            // _popupSystem.PopupEntity("Your actions have consequences!", target, target, PopupType.LargeCaution); // Don't popup since SOME punishments have some popups.
-            _chatManager.DispatchServerMessage(player, "Your actions have consequences!", true);
+            Func<(Func<EntityUid, bool>, string)> smiteGrabFunction;
+            if (i < bitter)
+                smiteGrabFunction = AnyBitterSmite;
+            else if (i < bitter + harsh)
+                smiteGrabFunction = AnyHarshSmite;
+            else if (i < bitter + harsh + nasty)
+                smiteGrabFunction = AnyNastySmite;
+            else if (i < bitter + harsh + nasty + harm)
+                smiteGrabFunction = AnyHarmSmite;
+            else
+                smiteGrabFunction = AnyKillSmite;
+
+            // Activate specific punishment
+            var (smiteFunc, smiteName) = smiteGrabFunction();
+            gotSmitted = smiteFunc(target);
+
+            LogImpact impact = (smiteGrabFunction == AnyKillSmite || smiteGrabFunction == AnyNastySmite) ? LogImpact.High
+                : (smiteGrabFunction == AnyHarshSmite || smiteGrabFunction == AnyHarmSmite) ? LogImpact.Medium
+                : LogImpact.Low;
             _adminLogger.Add(LogType.Karma,
-                LogImpact.High,
-                $"{ToPrettyString(target):actor} got automatically smitted by {choosen_smite}({i})(AnyLevelSmite). from too much karma loss.");
-        }
-        else
-        {
-            _adminLogger.Add(LogType.Karma,
-                LogImpact.High,
-                $"{ToPrettyString(target):actor} FAILED to get smitted by {choosen_smite}({i})(AnyLevelSmite). from too much karma loss.");
+                impact,
+                $"{ToPrettyString(target):actor} smitted by {smiteName}, and gotSmitted={gotSmitted}");
+            if (gotSmitted)
+                _chatManager.DispatchServerMessage(player, "Your actions have consequences!", true);
         }
     }
 
     #region Bitter
     /// Stuff that hardly sucks and is easily fixable
-    private void AnyBitterSmite(int i, EntityUid target, ref bool got_smitted)
+    private (Func<EntityUid, bool>, string) AnyBitterSmite()
     {
-        i = _random.Next(6);
-        switch (i)
+        Func<EntityUid, bool> BitterCreamPie = target =>
         {
-            case 0:
-                if (TryComp<CreamPiedComponent>(target, out var creamPied))
-                {
-                    _creamPieSystem.SetCreamPied(target, creamPied, true);
-                    got_smitted = true;
-                }
-                break;
-            case 1:
-                break;
-            case 2:
-                got_smitted = BitterSlip(target);
-                break;
-            case 3:
-                got_smitted = BitterSlow(target);
-                break;
-            case 4:
-                got_smitted = BitterSpeakBackwards(target);
-                break;
-            case 5:
-                got_smitted = BitterZoom(target);
-                break;
-            default:
-                break;
-        }
+            if (TryComp<CreamPiedComponent>(target, out var creamPied))
+            {
+                _creamPieSystem.SetCreamPied(target, creamPied, true);
+                return true;
+            }
+            return false;
+        };
+        var smites = new (Func<EntityUid, bool>, string)[]
+        {
+            (BitterCreamPie, nameof(BitterCreamPie)),
+            (BitterZoom, nameof(BitterZoom)),
+            (BitterSlip, nameof(BitterSlip)),
+            (BitterSlow, nameof(BitterSlow)),
+            (BitterSpeakBackwards, nameof(BitterSpeakBackwards)),
+        };
+
+        var (smite, smiteName) = smites[_random.Next(smites.Length)];
+        return (smite, smiteName);
     }
 
     private bool BitterZoom(EntityUid target)
     {
-        bool got_smitted;
         var eye = EnsureComp<ContentEyeComponent>(target);
         _eyeSystem.SetZoom(target, eye.TargetZoom * -1, ignoreLimits: true);
-        got_smitted = true;
-        return got_smitted;
+        return true;
     }
 
     private bool BitterSlip(EntityUid target)
     {
-        bool got_smitted;
         var hadSlipComponent = EnsureComp(target, out SlipperyComponent slipComponent);
         if (!hadSlipComponent)
         {
@@ -280,8 +212,7 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
         {
             RemComp(target, slipComponent);
         }
-        got_smitted = true;
-        return got_smitted;
+        return true;
     }
 
     private bool BitterSlow(EntityUid target)
@@ -305,42 +236,27 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
     #endregion
     #region Harsh
     // Quite annoying things that can be immpossible to fix
-    private void AnyHarshSmite(int i, EntityUid target, ref bool got_smitted)
+    private (Func<EntityUid, bool>, string) AnyHarshSmite()
     {
-        i = _random.Next(7);
-        switch (i)
+        Func<EntityUid, bool> HarshCluwne = target => { EnsureComp<CluwneComponent>(target); return true; };
+        var smites = new (Func<EntityUid, bool>, string)[]
         {
-            case 0:
-                EnsureComp<CluwneComponent>(target);
-                got_smitted = true;
-                break;
-            case 1:
-                got_smitted = HarshByeHand(target);
-                break;
-            case 2:
-                got_smitted = HarshLockInLocker(target);
-                break;
-            case 3:
-                got_smitted = HarshMaid(target);
-                break;
-            case 4:
-                got_smitted = HarshMessySpeach(target);
-                break;
-            case 5:
-                got_smitted = HarshSlow(target);
-                break;
-            case 6:
-                got_smitted = HarshSwapRunAndWalk(target);
-                break;
-            default:
-                break;
-        }
+            (HarshCluwne, nameof(HarshCluwne)),
+            (HarshByeHand, nameof(HarshByeHand)),
+            (HarshLockInLocker, nameof(HarshLockInLocker)),
+            (HarshMaid, nameof(HarshMaid)),
+            (HarshMessySpeach, nameof(HarshMessySpeach)),
+            (HarshSlow, nameof(HarshSlow)),
+            (HarshSwapRunAndWalk, nameof(HarshSwapRunAndWalk)),
+        };
+
+        var (smite, smiteName) = smites[_random.Next(smites.Length)];
+        return (smite, smiteName);
     }
 
 
     private bool HarshMessySpeach(EntityUid target)
     {
-        bool got_smitted;
         EnsureComp<BarkAccentComponent>(target);
         EnsureComp<BleatingAccentComponent>(target);
         EnsureComp<FrenchAccentComponent>(target);
@@ -359,8 +275,7 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
         {
             EnsureComp<BackwardsAccentComponent>(target); // was asked to make this at a low chance idk
         }
-        got_smitted = true;
-        return got_smitted;
+        return true;
     }
 
     private bool HarshByeHand(EntityUid target)
@@ -407,7 +322,6 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
 
     private bool HarshLockInLocker(EntityUid target)
     {
-        bool got_smitted;
         var xform = Transform(target);
         var locker = Spawn("ClosetMaintenance", xform.Coordinates);
         if (TryComp<EntityStorageComponent>(locker, out var storage))
@@ -417,8 +331,7 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
             _entityStorageSystem.ToggleOpen(target, locker, storage);
         }
         _weldableSystem.SetWeldedState(locker, true);
-        got_smitted = true;
-        return got_smitted;
+        return true;
     }
 
     private bool HarshSlow(EntityUid target)
@@ -436,50 +349,30 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
     #endregion
     #region Nasty
     // Fate worse then or about as bad as death
-    private void AnyNastySmite(int i, EntityUid target, ref bool got_smitted)
+    private (Func<EntityUid, bool>, string) AnyNastySmite()
     {
-        i = _random.Next(7);
-        switch (i)
+        Func<EntityUid, bool> NastyMonkeySmite = target => { _polymorphSystem.PolymorphEntity(target, "AdminMonkeySmite"); return true; };
+        Func<EntityUid, bool> NastyDisposalsSmite = target => { _polymorphSystem.PolymorphEntity(target, "AdminDisposalsSmite"); return true; };
+        Func<EntityUid, bool> NastyBreadSmite = target => { _polymorphSystem.PolymorphEntity(target, "AdminBreadSmite"); return true; };
+        Func<EntityUid, bool> NastyMouseSmite = target => { _polymorphSystem.PolymorphEntity(target, "AdminMouseSmite"); return true; };
+
+        var smites = new (Func<EntityUid, bool>, string)[]
         {
-            case 0:
-                _polymorphSystem.PolymorphEntity(target, "AdminMonkeySmite");
-                got_smitted = true;
-                break;
-            case 1:
-                _polymorphSystem.PolymorphEntity(target, "AdminDisposalsSmite");
-                got_smitted = true;
-                break;
-            case 2:
-                _polymorphSystem.PolymorphEntity(target, "AdminBreadSmite");
-                got_smitted = true;
-                break;
-            case 3:
-                _polymorphSystem.PolymorphEntity(target, "AdminMouseSmite");
-                got_smitted = true;
-                break;
-            case 4:
-                got_smitted = NastyByeHands(target);
-                break;
-            case 5:
-                got_smitted = NastyByeStomach(target);
-                break;
-            case 6:
-                got_smitted = NastyPinball(target);
-                break;
-            case 7:
-                break;
-            case 8:
-                break;
-            case 9:
-                break;
-            default:
-                break;
-        }
+            (NastyMonkeySmite, nameof(NastyMonkeySmite)),
+            (NastyDisposalsSmite, nameof(NastyDisposalsSmite)),
+            (NastyBreadSmite, nameof(NastyBreadSmite)),
+            (NastyMouseSmite, nameof(NastyMouseSmite)),
+            (NastyByeHands, nameof(NastyByeHands)),
+            (NastyByeStomach, nameof(NastyByeStomach)),
+            (NastyPinball, nameof(NastyPinball)),
+        };
+
+        var (smite, smiteName) = smites[_random.Next(smites.Length)];
+        return (smite, smiteName);
     }
 
     private bool NastyByeHands(EntityUid target)
     {
-        bool got_smitted;
         var baseXform2 = Transform(target);
         foreach (var part in _bodySystem.GetBodyChildrenOfType(target, BodyPartType.Hand))
         {
@@ -489,8 +382,7 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
             target, PopupType.LargeCaution);
         _popupSystem.PopupCoordinates(Loc.GetString("admin-smite-remove-hands-other", ("name", target)), baseXform2.Coordinates,
             Filter.PvsExcept(target), true, PopupType.Medium);
-        got_smitted = true;
-        return got_smitted;
+        return true;
     }
 
     private bool NastyByeStomach(EntityUid target)
@@ -539,26 +431,18 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
     #endregion
     #region Harm
     // Stuff that damages the player without a kill
-    private void AnyHarmSmite(int i, EntityUid target, ref bool got_smitted)
+    private (Func<EntityUid, bool>, string) AnyHarmSmite()
     {
-        i = _random.Next(4);
-        switch (i)
+        var smites = new (Func<EntityUid, bool>, string)[]
         {
-            case 0:
-                got_smitted = HarmBleeding(target);
-                break;
-            case 1:
-                got_smitted = HarmBurn(target);
-                break;
-            case 2:
-                got_smitted = HarmElectricute(target);
-                break;
-            case 3:
-                got_smitted = HarmBleeding(target);
-                break;
-            default:
-                break;
-        }
+            (HarmBleeding, nameof(HarmBleeding)),
+            (HarmBurn, nameof(HarmBurn)),
+            (HarmElectricute, nameof(HarmElectricute)),
+            (HarmBleeding, nameof(HarmBleeding)),
+        };
+
+        var (smite, smiteName) = smites[_random.Next(smites.Length)];
+        return (smite, smiteName);
     }
 
     private bool HarmBurn(EntityUid target)
@@ -618,46 +502,27 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
     #endregion
     #region Kill
     /// Kill should for the most part kill the person and possibly round remove them.
-    private void AnyKillSmite(int i, EntityUid target, ref bool got_smitted)
+    private (Func<EntityUid, bool>, string) AnyKillSmite()
     {
-        i = _random.Next(10);
-        switch (i)
+        Func<EntityUid, bool> KillSign = target => { EnsureComp<KillSignComponent>(target); return true; };
+        Func<EntityUid, bool> KillPointingArrow = target => { EnsureComp<PointingArrowAngeringComponent>(target); return true; };
+
+        var smites = new (Func<EntityUid, bool>, string)[]
         {
-            case 0:
-                got_smitted = KillAsh(target);
-                break;
-            case 1:
-                got_smitted = KillByeBlood(target);
-                break;
-            case 2:
-                got_smitted = KillByeLungs(target);
-                break;
-            case 3:
-                got_smitted = KillByeOrgans(target);
-                break;
-            case 4:
-                got_smitted = KillElectricute(target);
-                break;
-            case 5:
-                got_smitted = KillGibBoom(target);
-                break;
-            case 6:
-                got_smitted = KillTooFast(target);
-                break;
-            case 7:
-                got_smitted = KillYeet(target);
-                break;
-            case 8:
-                EnsureComp<KillSignComponent>(target);
-                got_smitted = true;
-                break;
-            case 9:
-                EnsureComp<PointingArrowAngeringComponent>(target);
-                got_smitted = true;
-                break;
-            default:
-                break;
-        }
+            (KillAsh, nameof(KillAsh)),
+            (KillByeBlood, nameof(KillByeBlood)),
+            (KillByeLungs, nameof(KillByeLungs)),
+            (KillByeOrgans, nameof(KillByeOrgans)),
+            (KillElectricute, nameof(KillElectricute)),
+            (KillGibBoom, nameof(KillGibBoom)),
+            (KillTooFast, nameof(KillTooFast)),
+            (KillYeet, nameof(KillYeet)),
+            (KillSign, nameof(KillSign)),
+            (KillPointingArrow, nameof(KillPointingArrow)),
+        };
+
+        var (smite, smiteName) = smites[_random.Next(smites.Length)];
+        return (smite, smiteName);
     }
 
     private bool KillByeBlood(EntityUid target)
@@ -741,7 +606,6 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
 
     private bool KillGibBoom(EntityUid target)
     {
-        bool got_smitted;
         var coords = _transformSystem.GetMapCoordinates(target);
         Timer.Spawn(_gameTiming.TickPeriod,
             () => _explosionSystem.QueueExplosion(coords, ExplosionSystem.DefaultExplosionPrototypeId,
@@ -749,8 +613,7 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
             CancellationToken.None);
 
         _bodySystem.GibBody(target);
-        got_smitted = true;
-        return got_smitted;
+        return true;
     }
 
     private bool KillYeet(EntityUid target)
@@ -801,12 +664,10 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
 
     private bool KillAsh(EntityUid target)
     {
-        bool got_smitted;
         EntityManager.QueueDeleteEntity(target);
         Spawn("Ash", Transform(target).Coordinates);
         _popupSystem.PopupEntity(Loc.GetString("admin-smite-turned-ash-other", ("name", target)), target, PopupType.LargeCaution);
-        got_smitted = true;
-        return got_smitted;
+        return true;
     }
 
     private bool KillTooFast(EntityUid target)

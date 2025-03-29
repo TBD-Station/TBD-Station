@@ -332,7 +332,7 @@ namespace Content.Server._TBDStation.ServerKarma
             {
                 _adminLogger.Add(LogType.Karma,
                 LogImpact.Medium,
-                $"{ToPrettyString(new EntityUid(ev.User)):actor} griefed by {PlayerKarmaGriefEvent.GriefType.IgniteOthers} lossing {(int) dif} karma");
+                $"{ToPrettyString(new EntityUid(ev.User)):actor} griefed by {ev.Grief} lossing {(int) dif} karma");
                 _karmaMan.RemoveKarma(netUserId, (int) dif);
                 UpdateAssholeMeter(netUserId, dif);
             }
