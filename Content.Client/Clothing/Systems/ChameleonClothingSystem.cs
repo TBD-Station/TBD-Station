@@ -1,5 +1,7 @@
 ﻿using System.Linq;
+using Content.Client.Light.Components;
 using Content.Client.PDA;
+using Content.Client.Toggleable;
 using Content.Shared.Clothing.Components;
 using Content.Shared.Clothing.EntitySystems;
 using Content.Shared.Inventory;
@@ -41,6 +43,14 @@ public sealed class ChameleonClothingSystem : SharedChameleonClothingSystem
 
     private void HandleState(EntityUid uid, ChameleonClothingComponent component, ref AfterAutoHandleStateEvent args)
     {
+        if (!string.IsNullOrEmpty(component.Default) &&
+        _proto.TryIndex(component.Default, out EntityPrototype? proto))
+        {
+            RemoveAndAddComponent<PointLightComponent>(uid, proto);
+            RemoveAndAddComponent<LightBehaviourComponent>(uid, proto);
+            RemoveAndAddComponent<ToggleableLightVisualsComponent>(uid, proto);
+        }
+
         UpdateVisuals(uid, component);
     }
 
@@ -106,5 +116,17 @@ public sealed class ChameleonClothingSystem : SharedChameleonClothingSystem
                 _data[slot].Add(proto.ID);
             }
         }
+    }
+
+    private void RemoveAndAddComponent<T>(EntityUid uid, EntityPrototype proto, Action<T>? afterAddAction = null) where T : IComponent, new()
+    {
+        RemComp<T>(uid);
+        if (!proto.TryGetComponent(out T? component, _factory))
+            return;
+
+        AddComp(uid, component);
+
+        if (afterAddAction != null)
+            afterAddAction(component);
     }
 }
