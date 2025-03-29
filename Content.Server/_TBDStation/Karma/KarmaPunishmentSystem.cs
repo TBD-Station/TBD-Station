@@ -166,6 +166,7 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
 
         int totalWheight = nothing + bitter + harsh + nasty + harm + kill;
         int attempts = 0, i = 0;
+        string choosen_smite = "NONE";
         bool got_smitted = false;
         while (!got_smitted && attempts++ < 9)
         {
@@ -174,19 +175,34 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
                 return;
             i -= nothing;
             if (i < bitter)
+            {
+                choosen_smite = "Bitter";
                 AnyBitterSmite(i, target, ref got_smitted);
+            }
             i -= bitter;
             if (i < harsh)
+            {
+                choosen_smite = "Hasrsh";
                 AnyHarshSmite(i, target, ref got_smitted);
+            }
             i -= harsh;
             if (i < nasty)
+            {
+                choosen_smite = "Nasty";
                 AnyNastySmite(i, target, ref got_smitted);
+            }
             i -= nasty;
             if (i < harm)
+            {
+                choosen_smite = "Harm";
                 AnyHarmSmite(i, target, ref got_smitted);
+            }
             i -= harm;
             if (i < kill)
+            {
+                choosen_smite = "Kill";
                 AnyKillSmite(i, target, ref got_smitted);
+            }
             i -= kill;
         }
 
@@ -196,7 +212,13 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
             _chatManager.DispatchServerMessage(player, "Your actions have consequences!", true);
             _adminLogger.Add(LogType.Karma,
                 LogImpact.High,
-                $"{ToPrettyString(target):actor} got automatically smitted by {i}(AnyLevelSmite). from too much karma loss.");
+                $"{ToPrettyString(target):actor} got automatically smitted by {choosen_smite}({i})(AnyLevelSmite). from too much karma loss.");
+        }
+        else
+        {
+            _adminLogger.Add(LogType.Karma,
+                LogImpact.High,
+                $"{ToPrettyString(target):actor} FAILED to get smitted by {choosen_smite}({i})(AnyLevelSmite). from too much karma loss.");
         }
     }
 
