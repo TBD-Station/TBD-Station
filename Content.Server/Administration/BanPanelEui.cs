@@ -1,5 +1,7 @@
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using Content.Server._TBDStation.SlurFilter;
 using Content.Server.Administration.Managers;
 using Content.Server.Administration.Systems;
 using Content.Server.Chat.Managers;
@@ -19,6 +21,7 @@ public sealed class BanPanelEui : BaseEui
     [Dependency] private readonly IPlayerLocator _playerLocator = default!;
     [Dependency] private readonly IChatManager _chat = default!;
     [Dependency] private readonly IAdminManager _admins = default!;
+    [Dependency] private readonly SlurFilterManager _slurMan = default!; // TBDStation
 
     private readonly ISawmill _sawmill;
 
@@ -114,6 +117,16 @@ public sealed class BanPanelEui : BaseEui
                 addressRange = (targetAddress, hid);
             }
             targetHWid = useLastHwid ? located.LastHWId : hwid;
+        }
+
+        if (roles?.Count == 1) // TBDStation
+        {
+            if (roles.First() == "MUTE")
+            {
+                _slurMan.Mute(PlayerId, minutes);
+                Close();
+                return;
+            }
         }
 
         if (roles?.Count > 0)

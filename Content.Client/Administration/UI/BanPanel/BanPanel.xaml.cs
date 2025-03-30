@@ -63,7 +63,8 @@ public sealed partial class BanPanel : DefaultWindow
     {
         None,
         Server,
-        Role
+        Role,
+        Mute // TBDStation
     }
 
     public BanPanel()
@@ -141,6 +142,7 @@ public sealed partial class BanPanel : DefaultWindow
         TypeOption.AddItem(Loc.GetString("ban-panel-select"), (int) Types.None);
         TypeOption.AddItem(Loc.GetString("ban-panel-server"), (int) Types.Server);
         TypeOption.AddItem(Loc.GetString("ban-panel-role"), (int) Types.Role);
+        TypeOption.AddItem("Mute", (int) Types.Mute); // TBDStation
 
         ReasonTextEdit.Placeholder = new Rope.Leaf(Loc.GetString("ban-panel-reason"));
 
@@ -485,6 +487,15 @@ public sealed partial class BanPanel : DefaultWindow
             TypeOption.ModulateSelfOverride = Color.Red;
             Tabs.CurrentTab = (int) TabNumbers.BasicInfo;
             return;
+        }
+
+        if (TypeOption.SelectedId == (int) Types.Mute) // TBDStation
+        {
+            var rolesList = new List<string>
+            {
+                "MUTE"
+            };
+            roles = rolesList.ToArray();
         }
 
         var reason = Rope.Collapse(ReasonTextEdit.TextRope);
