@@ -115,6 +115,10 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
         if (HasComp<MapComponent>(target) || HasComp<MapGridComponent>(target))
             return;
 
+        int karmaLost = ev.NewKarma - ev.OldKarma;
+        if (_random.Next(10) <= karmaLost)
+            return; // If you don't lose a lot of karma make a punishment less likely.
+
         // Pick punishment type
         var (nothing, bitter, harm, harsh, nasty, kill) = ev.NewKarma switch
         {
@@ -126,8 +130,15 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
             > -1200 and <= -1000 => (40, 20, 20, 10, 0, 10),
             <= -1200 =>             (25, 0, 25, 0, 25, 25),
         };
-
+        if (karmaLost >= 20)
+        { // If you lose a lot of karma make a worse punishment more likely.
+            float badMult = karmaLost / 10f; // >= 2
+            nothing = (int)(nothing / (2 * badMult));
+            nothing = (int)(nasty * badMult);
+            nothing = (int)(kill * badMult);
+        }
         int totalWeight = nothing + bitter + harsh + nasty + harm + kill;
+
         int attempts = 0;
         bool gotSmitted = false;
         while (!gotSmitted && attempts++ < 9)
@@ -450,7 +461,7 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
         if (TryComp<FlammableComponent>(target, out var flammable))
         {
             // Fuck you. Burn Forever.
-            flammable.FireStacks = flammable.MaximumFireStacks;
+            flammable.FireStacks = 4.5f;
             _flammableSystem.Ignite(target, target);
             var xform5 = Transform(target);
             _popupSystem.PopupEntity(Loc.GetString("admin-smite-set-alight-self"), target,
@@ -519,6 +530,8 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
             (KillYeet, nameof(KillYeet)),
             (KillSign, nameof(KillSign)),
             (KillPointingArrow, nameof(KillPointingArrow)),
+            (KillBurn, nameof(KillBurn)),
+            (KillSuperBonk, nameof(KillSuperBonk)),
         };
 
         var (smite, smiteName) = smites[_random.Next(smites.Length)];
@@ -677,6 +690,29 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
 
         _popupSystem.PopupEntity(Loc.GetString("admin-smite-super-speed-prompt"), target,
             target, PopupType.LargeCaution);
+        return true;
+    }
+
+    private bool KillBurn(EntityUid target)
+    {
+        if (TryComp<FlammableComponent>(target, out var flammable))
+        {
+            // Fuck you. Burn Forever.
+            flammable.FireStacks = flammable.MaximumFireStacks;
+            _flammableSystem.Ignite(target, target);
+            var xform5 = Transform(target);
+            _popupSystem.PopupEntity(Loc.GetString("admin-smite-set-alight-self"), target,
+                target, PopupType.LargeCaution);
+            _popupSystem.PopupCoordinates(Loc.GetString("admin-smite-set-alight-others", ("name", target)), xform5.Coordinates,
+                Filter.PvsExcept(target), true, PopupType.MediumCaution);
+            return true;
+        }
+        return false;
+    }
+
+    private bool KillSuperBonk(EntityUid target)
+    {
+        _superBonkSystem.StartSuperBonk(target, stopWhenDead: true);
         return true;
     }
     #endregion

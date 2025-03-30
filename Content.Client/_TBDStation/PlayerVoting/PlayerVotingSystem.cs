@@ -35,6 +35,7 @@ public sealed partial class PlayerVotingSystem : EntitySystem
         {
             Text = "Vote: Postive",
             ClientExclusive = true,
+            Icon = new SpriteSpecifier.Texture(new ("/Textures/Interface/VerbIcons/drop.svg.192dpi.png")),
             Act = () => RaiseNetworkEvent(new PlayerVoteEvent(voter.Value, target.Value, 1))
         };
 
@@ -44,6 +45,7 @@ public sealed partial class PlayerVotingSystem : EntitySystem
         {
             Text = "Vote: Negative",
             ClientExclusive = true,
+            Icon = new SpriteSpecifier.Texture(new ("/Textures/Interface/VerbIcons/pickup.svg.192dpi.png")),
             Act = () => RaiseNetworkEvent(new PlayerVoteEvent(voter.Value, target.Value, -1))
         };
 
