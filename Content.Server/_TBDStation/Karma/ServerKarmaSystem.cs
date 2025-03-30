@@ -70,14 +70,6 @@ namespace Content.Server._TBDStation.ServerKarma
             SubscribeLocalEvent<PlayerKarmaGriefEvent>(OnKarmaGrief);
 
             SubscribeLocalEvent<DepStatDEvent>(OnDepartmentSuccessChange);
-            // SubscribeLocalEvent<PowerChangedEvent>(OnPowerChanged);
-            // SubscribeLocalEvent<LatheStartPrintingEvent>(OnLathePrint);
-
-            // TODO use CVars, I believe they let us change these values midgame.
-            // Subs.CVar(_cfg, GoobCVars.GoobcoinsPerPlayer, value => _karmaPerRound = value, true);
-            // Subs.CVar(_cfg, GoobCVars.GoobcoinNonAntagMultiplier, value => _goobcoinsNonAntagMultiplier = value, true);
-            // Subs.CVar(_cfg, GoobCVars.GoobcoinServerMultiplier, value => _goobcoinsServerMultiplier = value, true);
-            // Subs.CVar(_cfg, GoobCVars.GoobcoinMinPlayers, value => _goobcoinsMinPlayers = value, true);
         }
 
         private void OnDepartmentSuccessChange(DepStatDEvent ev)
@@ -126,9 +118,9 @@ namespace Content.Server._TBDStation.ServerKarma
         private void OnRoundEndText(RoundEndMessageEvent ev)
         {
             // TODO: renable
-            // if (_players.PlayerCount < _goobcoinsMinPlayers)
+            // if (_players.PlayerCount < CONST)
             //     return;
-            if (ev.RoundDuration > TimeSpan.FromMinutes(10))
+            if (ev.RoundDuration < TimeSpan.FromMinutes(10))
                 return;
 
             var query = EntityQueryEnumerator<MindContainerComponent>();
@@ -160,7 +152,7 @@ namespace Content.Server._TBDStation.ServerKarma
                 var session = mind.Session; // mind.MindRoles
                 if (session is not null)
                 {
-                    karma += 40; // TODO setup job reward on yml//_jobs.GetJobGoobcoins(session);
+                    karma += 40; // TODO setup job reward on yml//_jobs.GetKarma(session);
                 }
 
                 var job = _jobs.MindTryGetJobName(mindId);
@@ -235,7 +227,7 @@ namespace Content.Server._TBDStation.ServerKarma
                 if (departments.Count != 0)
                     karma += jobSuccessKarma / departments.Count;
                 karma *= _karmaEndRoundMultiplier;
-                if (ev.RoundDuration > TimeSpan.FromMinutes(30))
+                if (ev.RoundDuration < TimeSpan.FromMinutes(30))
                     karma *= 0.6f; // Thirty minuate less karma change
 
                 _adminLogger.Add(LogType.Karma,
