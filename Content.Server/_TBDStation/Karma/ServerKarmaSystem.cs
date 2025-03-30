@@ -121,7 +121,12 @@ namespace Content.Server._TBDStation.ServerKarma
             // if (_players.PlayerCount < CONST)
             //     return;
             if (ev.RoundDuration < TimeSpan.FromMinutes(10))
+            {
+                _adminLogger.Add(LogType.Karma,
+                LogImpact.High,
+                $"NO end round karma change since round duration: {ev.RoundDuration} is shorter then 10 mins");
                 return;
+            }
 
             var query = EntityQueryEnumerator<MindContainerComponent>();
             var departmentProtos = _prototypeManager.EnumeratePrototypes<DepartmentPrototype>();
@@ -192,6 +197,11 @@ namespace Content.Server._TBDStation.ServerKarma
             _adminLogger.Add(LogType.Karma,
             LogImpact.Medium,
             $"Department Overall Success Karma bonus/decriment's are: Security:{departmentSuccessSecurity}, Cargo:{departmentSuccessCargo}, Engineering:{departmentSuccessEngineering}, Medical:{departmentSuccessMedical}, Science:{departmentSuccessScience}, Command/Silicon:{departmentSuccessAll}");
+
+            if (ev.RoundDuration < TimeSpan.FromMinutes(30))
+                _adminLogger.Add(LogType.Karma,
+                LogImpact.Medium,
+                $"LESS end round karma change since round duration: {ev.RoundDuration} is shorter then 30 mins");
             // Add department data to karma sums
             foreach (var player in players)
             {
