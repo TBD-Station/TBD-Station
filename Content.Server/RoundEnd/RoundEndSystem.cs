@@ -179,6 +179,7 @@ namespace Content.Server.RoundEnd
                 time = countdownTime.Minutes;
                 units = "eta-units-minutes";
             }
+            ActivateCooldown(); // TBDStation
 
             _chatSystem.DispatchGlobalAnnouncement(Loc.GetString(text,
                 ("time", time),
@@ -240,7 +241,7 @@ namespace Content.Server.RoundEnd
 
             LastCountdownStart = null;
             ExpectedCountdownEnd = null;
-            ActivateCooldown();
+            // ActivateCooldown(); // TBDStation
             RaiseLocalEvent(RoundEndSystemChangedEvent.Default);
 
             // remove active clientside evac shuttle timers by zeroing the target time
