@@ -138,6 +138,8 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
             nothing = (int)(kill * badMult);
         }
         int totalWeight = nothing + bitter + harsh + nasty + harm + kill;
+        if (totalWeight == 0)
+            return; // No punishment available.
 
         int attempts = 0;
         bool gotSmitted = false;
@@ -157,8 +159,10 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
                 smiteGrabFunction = AnyNastySmite;
             else if (i < bitter + harsh + nasty + harm)
                 smiteGrabFunction = AnyHarmSmite;
-            else
+            else if (i < bitter + harsh + nasty + harm + kill)
                 smiteGrabFunction = AnyKillSmite;
+            else
+                return; // Shouldn't happen but just in case.
 
             // Activate specific punishment
             var (smiteFunc, smiteName) = smiteGrabFunction();
@@ -169,7 +173,7 @@ public sealed partial class KarmaPunishmentSystem : EntitySystem
                 : LogImpact.Low;
             _adminLogger.Add(LogType.Karma,
                 impact,
-                $"{ToPrettyString(target):actor} smitted by {smiteName}, and gotSmitted={gotSmitted}");
+                $"{ToPrettyString(target):actor} with karma={ev.NewKarma} smitted by {smiteName}, and gotSmitted={gotSmitted}");
             if (gotSmitted)
                 _chatManager.DispatchServerMessage(player, "Your actions have consequences!", true);
         }
