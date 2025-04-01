@@ -39,7 +39,7 @@ public sealed class ServerPlayerVotingSystem : EntitySystem
             if (userSession.AttachedEntity.HasValue)
             {
                 var userEnt = userSession.AttachedEntity.Value;
-                _popupSystem.PopupEntity($"{ev.Vote} Voted!", userEnt, userEnt, PopupType.Medium);
+                _popupSystem.PopupEntity($"{(ev.Vote == 1 ? "Positive" : ev.Vote == -1 ? "Negative" : "unknown")} Voted!", userEnt, userEnt, PopupType.Medium);
             }
     }
 
