@@ -81,18 +81,19 @@ namespace Content.IntegrationTests.Tests
                     Assert.That(roundEndSystem.ExpectedCountdownEnd, Is.Not.Null, "We were waiting for the cooldown, but the round also ended");
                 });
                 // Recall the shuttle, which should trigger the cooldown again
-                roundEndSystem.CancelRoundEndCountdown();
-                Assert.Multiple(() =>
-                {
-                    Assert.That(roundEndSystem.ExpectedCountdownEnd, Is.Null, "Recalled shuttle, but countdown has not ended");
-                    Assert.That(roundEndSystem.CanCallOrRecall(), Is.False, "Recalled shuttle, but cooldown has not been enabled");
-                });
+                // roundEndSystem.CancelRoundEndCountdown(); TBDStation
+                // Assert.Multiple(() => // TBDStation - we swapped it so that the cooldown is applied after calling not after recalling.
+                // {
+                //     Assert.That(roundEndSystem.ExpectedCountdownEnd, Is.Null, "Recalled shuttle, but countdown has not ended");
+                //     // Assert.That(roundEndSystem.CanCallOrRecall(), Is.False, "Recalled shuttle, but cooldown has not been enabled");
+                // });
             });
 
             await WaitForEvent(); // Wait for Cooldown
 
             await server.WaitAssertion(() =>
             {
+                roundEndSystem.CancelRoundEndCountdown(); // TBDStation
                 Assert.That(roundEndSystem.CanCallOrRecall(), Is.True, "We waited a while, but the cooldown is not expired");
                 // Press the shuttle call button
                 roundEndSystem.RequestRoundEnd();
@@ -102,11 +103,11 @@ namespace Content.IntegrationTests.Tests
 
             await server.WaitAssertion(() =>
             {
-                Assert.Multiple(() =>
-                {
-                    Assert.That(roundEndSystem.CanCallOrRecall(), Is.True, "We waited a while, but the cooldown is not expired");
-                    Assert.That(roundEndSystem.ExpectedCountdownEnd, Is.Not.Null, "The countdown ended, but we just wanted the cooldown to end");
-                });
+                // Assert.Multiple(() => // TBDStation
+                // {
+                //     Assert.That(roundEndSystem.CanCallOrRecall(), Is.True, "We waited a while, but the cooldown is not expired");
+                //     Assert.That(roundEndSystem.ExpectedCountdownEnd, Is.Not.Null, "The countdown ended, but we just wanted the cooldown to end");
+                // });
             });
 
             await WaitForEvent(); // Wait for countdown to end round

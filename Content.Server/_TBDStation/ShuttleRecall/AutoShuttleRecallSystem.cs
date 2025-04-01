@@ -78,12 +78,12 @@ public sealed class AutoShuttleRecallSystem : EntitySystem
                 $"Shift ended INSTANTLY since everyone is dead. {fractionDead} of crew dead. {healthy} alive, {dead} dead.");
             _roundEnd.EndRound(); // end round instantly
         }
-        else if (healthy + dead == 0) // No one is alive or dead
-        {
-            EndRoundLogAndAnnouce("NT detects no life on the station, and has decided to sever connection with the station.",
-                $"Shift ended INSTANTLY since no one is alive or dead.");
-            _roundEnd.EndRound(); // end round instantly
-        }
+        // else if (healthy + dead == 0) // No one is alive or dead - Removed for time being since it breaks integration tests, and the people can just vote to restart the round. - https://github.com/Bilbo367/TBD-Station/blob/5e1169b101df94e2f767ebc9d503734fa4af193a/Content.IntegrationTests/Pair/TestPair.Recycle.cs#L199
+        // {
+        //     EndRoundLogAndAnnouce("NT detects no life on the station, and has decided to sever connection with the station.",
+        //         $"Shift ended INSTANTLY since no one is alive or dead.");
+        //     _roundEnd.EndRound(); // end round instantly
+        // }
         else if (_timing.CurTime > _endRound)
         {
             EndRoundLogAndAnnouce("NT detects irregular length of shift, and has decided to sever connection with the station.",
