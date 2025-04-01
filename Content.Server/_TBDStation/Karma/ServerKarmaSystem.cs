@@ -161,7 +161,7 @@ public sealed class ServerKarmaSystem : EntitySystem
         foreach (var player in players)
         {
             // Calculate job success karma based on departments
-            var jobSuccessKarma = player.Item4.Sum(department => department.ID switch
+            var jobSuccessKarma = player.Departments.Sum(department => department.ID switch
             {
                 "Command" or "Silicon" => departmentSuccessAll,
                 "Security" => departmentSuccessSecurity,
@@ -173,13 +173,13 @@ public sealed class ServerKarmaSystem : EntitySystem
             });
 
             // Update player karma
-            var karma = player.Item3 + jobSuccessKarma / player.Item4.Count;
+            var karma = player.Karma + jobSuccessKarma / player.Departments.Count;
             karma *= _karmaEndRoundMultiplier;
             if (ev.RoundDuration < TimeSpan.FromMinutes(30)) karma *= 0.6f; // Reduced karma for short rounds
 
             // Log and update karma
-            _adminLogger.Add(LogType.Karma, LogImpact.Medium, $"end round {ToPrettyString(player.Item2):actor} gaining or lossing {(int) karma} karma");
-            _karmaMan.AddKarma(player.Item1, (int) karma);
+            _adminLogger.Add(LogType.Karma, LogImpact.Medium, $"end round {ToPrettyString(player.EntityUid):actor} gaining or lossing {(int) karma} karma");
+            _karmaMan.AddKarma(player.UserId, (int) karma);
         }
     }
 
