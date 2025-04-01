@@ -34,6 +34,7 @@ namespace Content.Client.PDA
         private string _instructions = Loc.GetString("comp-pda-ui-unknown");
         
 
+        private TimeSpan? shuttleEATime; // TBDStation
         private int _currentView;
 
         public event Action<EntityUid>? OnProgramItemPressed;
@@ -171,6 +172,14 @@ namespace Content.Client.PDA
 
             StationTimeLabel.SetMarkup(Loc.GetString("comp-pda-ui-station-time",
                 ("time", stationTime.ToString("hh\\:mm\\:ss"))));
+
+            if (state.expectedCountdownEndForShuttle.HasValue) // TBDStation
+            {
+                shuttleEATime = state.expectedCountdownEndForShuttle.Value; // TBDStation
+                var shuttleEtaTime = state.expectedCountdownEndForShuttle.Value - _gameTiming.CurTime; // TBDStation
+                EvacTimeLabel.SetMarkup(Loc.GetString("comp-pda-ui-shuttle-time",
+                    ("time", shuttleEtaTime.ToString("hh\\:mm\\:ss")))); // TBDStation
+            }
 
             var alertLevel = state.PdaOwnerInfo.StationAlertLevel;
             var alertColor = state.PdaOwnerInfo.StationAlertColor;
@@ -345,6 +354,13 @@ namespace Content.Client.PDA
 
             StationTimeLabel.SetMarkup(Loc.GetString("comp-pda-ui-station-time",
                 ("time", stationTime.ToString("hh\\:mm\\:ss"))));
+
+            if (shuttleEATime.HasValue) // TBDStation
+            {
+                var shuttleEtaTime = shuttleEATime.Value - _gameTiming.CurTime; // TBDStation
+                EvacTimeLabel.SetMarkup(Loc.GetString("comp-pda-ui-shuttle-time",
+                    ("time", shuttleEtaTime.ToString("hh\\:mm\\:ss")))); // TBDStation
+            }
         }
     }
 }

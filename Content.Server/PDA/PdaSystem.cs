@@ -6,6 +6,7 @@ using Content.Server.DeviceNetwork.Components;
 using Content.Server.Instruments;
 using Content.Server.Light.EntitySystems;
 using Content.Server.PDA.Ringer;
+using Content.Server.RoundEnd;
 using Content.Server.Station.Systems;
 using Content.Server.Store.Components;
 using Content.Server.Store.Systems;
@@ -38,6 +39,7 @@ namespace Content.Server.PDA
         [Dependency] private readonly UnpoweredFlashlightSystem _unpoweredFlashlight = default!;
         [Dependency] private readonly ContainerSystem _containerSystem = default!;
         [Dependency] private readonly IdCardSystem _idCard = default!;
+        [Dependency] private readonly RoundEndSystem _roundEndSystem = default!; // TBDStation
 
         public override void Initialize()
         {
@@ -210,7 +212,9 @@ namespace Content.Server.PDA
                 pda.StationName,
                 showUplink,
                 hasInstrument,
-                address);
+                address,
+                _roundEndSystem.ExpectedCountdownEnd // TBDStation
+                );
 
             _ui.SetUiState(uid, PdaUiKey.Key, state);
         }
