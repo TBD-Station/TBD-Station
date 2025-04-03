@@ -1,5 +1,6 @@
 using System.Threading;
 using Content.Server.DeviceNetwork.Components;
+using Content.Server.RoundEnd;
 using Content.Server.Screens.Components;
 using Content.Server.Shuttles.Components;
 using Content.Server.Shuttles.Events;
@@ -36,7 +37,7 @@ public sealed partial class EmergencyShuttleSystem
     /// <summary>
     /// How much time remaining until the shuttle consoles for emergency shuttles are unlocked?
     /// </summary>
-    private float _consoleAccumulator = float.MinValue;
+    public float _consoleAccumulator = float.MinValue; // TBDStation edit
 
     /// <summary>
     /// How long after the transit is over to end the round.
@@ -221,6 +222,7 @@ public sealed partial class EmergencyShuttleSystem
             _chatSystem.DispatchGlobalAnnouncement(Loc.GetString("emergency-shuttle-left", ("transitTime", $"{TransitTime:0}")));
 
             Timer.Spawn((int)(TransitTime * 1000) + _bufferTime.Milliseconds, () => _roundEnd.EndRound(), _roundEndCancelToken?.Token ?? default);
+            RaiseLocalEvent(RoundEndSystemChangedEvent.Default); // TBDStation
         }
 
         // All the others.

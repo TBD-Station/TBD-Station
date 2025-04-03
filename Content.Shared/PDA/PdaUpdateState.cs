@@ -16,7 +16,9 @@ namespace Content.Shared.PDA
         public bool HasUplink;
         public bool CanPlayMusic;
         public string? Address;
-        public TimeSpan? expectedCountdownEndForShuttle; // TBDStation
+        public TimeSpan? ExpectedCountdownEndForShuttle; // TBDStation
+        public float ConsoleAccumulator; // TBDStation
+        public bool EmergencyShuttleArrived; // TBDStation
 
         public PdaUpdateState(
             List<NetEntity> programs,
@@ -29,7 +31,9 @@ namespace Content.Shared.PDA
             bool hasUplink = false,
             bool canPlayMusic = false,
             string? address = null,
-            TimeSpan? expectedCountdownEnd = null) // TBDStation Edit
+            TimeSpan? expectedCountdownEnd = null, // TBDStation Edit
+            float consoleAccumulator = 0, // TBDStation Edit
+            bool emergencyShuttleArrived = false) // TBDStation Edit
             : base(programs, activeUI)
         {
             FlashlightEnabled = flashlightEnabled;
@@ -40,7 +44,9 @@ namespace Content.Shared.PDA
             CanPlayMusic = canPlayMusic;
             StationName = stationName;
             Address = address;
-            expectedCountdownEndForShuttle = expectedCountdownEnd; // TBDStation
+            ExpectedCountdownEndForShuttle = expectedCountdownEnd; // TBDStation
+            ConsoleAccumulator = consoleAccumulator; // TBDStation
+            EmergencyShuttleArrived = emergencyShuttleArrived; // TBDStation
         }
     }
 

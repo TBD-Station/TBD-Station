@@ -36,6 +36,8 @@ comp-pda-ui-station-time = Shift duration: [color=white]{ $time }[/color]
 
 # TBDStation
 comp-pda-ui-shuttle-time = Evac ETA: [color=white]{ $time }[/color]
+comp-pda-ui-shuttle-time-arrived = Evac EDT: [color=orange]{ $time }[/color]
+comp-pda-ui-shuttle-time-departed = Evacation Shuttle has left station.
 
 comp-pda-ui-eject-id-button = Eject ID
 

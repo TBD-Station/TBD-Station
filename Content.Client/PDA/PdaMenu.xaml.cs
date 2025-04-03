@@ -32,9 +32,10 @@ namespace Content.Client.PDA
         private string _stationName = Loc.GetString("comp-pda-ui-unknown");
         private string _alertLevel = Loc.GetString("comp-pda-ui-unknown");
         private string _instructions = Loc.GetString("comp-pda-ui-unknown");
-        
 
-        private TimeSpan? shuttleEATime; // TBDStation
+
+        private TimeSpan? _shuttleEATime; // TBDStation
+        private bool EmergencyShuttleArrived = false; // TBDStation
         private int _currentView;
 
         public event Action<EntityUid>? OnProgramItemPressed;
@@ -126,7 +127,7 @@ namespace Content.Client.PDA
                 _clipboard.SetText(_instructions);
             };
 
-            
+
 
 
             HideAllViews();
@@ -166,19 +167,34 @@ namespace Content.Client.PDA
             _stationName = state.StationName ?? Loc.GetString("comp-pda-ui-unknown");
             StationNameLabel.SetMarkup(Loc.GetString("comp-pda-ui-station",
                 ("station", _stationName)));
-            
+
 
             var stationTime = _gameTiming.CurTime.Subtract(_gameTicker.RoundStartTimeSpan);
 
             StationTimeLabel.SetMarkup(Loc.GetString("comp-pda-ui-station-time",
                 ("time", stationTime.ToString("hh\\:mm\\:ss"))));
 
-            if (state.expectedCountdownEndForShuttle.HasValue) // TBDStation
+            if (state.ExpectedCountdownEndForShuttle.HasValue) // TBDStation
             {
-                shuttleEATime = state.expectedCountdownEndForShuttle.Value; // TBDStation
-                var shuttleEtaTime = state.expectedCountdownEndForShuttle.Value - _gameTiming.CurTime; // TBDStation
-                EvacTimeLabel.SetMarkup(Loc.GetString("comp-pda-ui-shuttle-time",
-                    ("time", shuttleEtaTime.ToString("hh\\:mm\\:ss")))); // TBDStation
+                if (state.EmergencyShuttleArrived && state.ConsoleAccumulator <= 0)
+                {
+                    _shuttleEATime = null; // TBDStation
+                    EvacTimeLabel.SetMarkup(Loc.GetString("comp-pda-ui-shuttle-time-departed")); // TBDStation
+                }
+                else if (state.EmergencyShuttleArrived)
+                {
+                    EmergencyShuttleArrived = true; // TBDStation
+                    _shuttleEATime = TimeSpan.FromSeconds(state.ConsoleAccumulator) + _gameTiming.CurTime; // TBDStation
+                    EvacTimeLabel.SetMarkup(Loc.GetString("comp-pda-ui-shuttle-time-arrived",
+                        ("time", _shuttleEATime.Value.ToString("hh\\:mm\\:ss")))); // TBDStation
+                }
+                else
+                {
+                    _shuttleEATime = state.ExpectedCountdownEndForShuttle.Value; // TBDStation
+                    var shuttleEtaTime = state.ExpectedCountdownEndForShuttle.Value - _gameTiming.CurTime; // TBDStation
+                    EvacTimeLabel.SetMarkup(Loc.GetString("comp-pda-ui-shuttle-time",
+                        ("time", shuttleEtaTime.ToString("hh\\:mm\\:ss")))); // TBDStation
+                }
             }
 
             var alertLevel = state.PdaOwnerInfo.StationAlertLevel;
@@ -355,11 +371,20 @@ namespace Content.Client.PDA
             StationTimeLabel.SetMarkup(Loc.GetString("comp-pda-ui-station-time",
                 ("time", stationTime.ToString("hh\\:mm\\:ss"))));
 
-            if (shuttleEATime.HasValue) // TBDStation
+            if (_shuttleEATime.HasValue) // TBDStation
             {
-                var shuttleEtaTime = shuttleEATime.Value - _gameTiming.CurTime; // TBDStation
-                EvacTimeLabel.SetMarkup(Loc.GetString("comp-pda-ui-shuttle-time",
-                    ("time", shuttleEtaTime.ToString("hh\\:mm\\:ss")))); // TBDStation
+                if (EmergencyShuttleArrived)
+                {
+                    var shuttleEtaTime = _shuttleEATime.Value - _gameTiming.CurTime; // TBDStation
+                    EvacTimeLabel.SetMarkup(Loc.GetString("comp-pda-ui-shuttle-time-arrived",
+                        ("time", shuttleEtaTime.ToString("hh\\:mm\\:ss")))); // TBDStation
+                }
+                else
+                {
+                    var shuttleEtaTime = _shuttleEATime.Value - _gameTiming.CurTime; // TBDStation
+                    EvacTimeLabel.SetMarkup(Loc.GetString("comp-pda-ui-shuttle-time",
+                        ("time", shuttleEtaTime.ToString("hh\\:mm\\:ss")))); // TBDStation
+                }
             }
         }
     }
