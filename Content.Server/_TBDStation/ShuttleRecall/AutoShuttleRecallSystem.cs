@@ -70,6 +70,8 @@ public sealed class AutoShuttleRecallSystem : EntitySystem
         var healthy = x.Item1;
         var dead = x.Item2; // Some reason doesn't count ghosts
         _totalHumans = Math.Max(healthy + dead, _totalHumans);
+        if (_totalHumans == 0)
+            return; // Nobody joined yet, so no need to check.
         var fractionDead = Math.Abs(1 - (float)healthy / _totalHumans);
 
         if (fractionDead >= 1) // Just end if absolutely no one is alive
@@ -87,7 +89,7 @@ public sealed class AutoShuttleRecallSystem : EntitySystem
         else if (_timing.CurTime > _endRound)
         {
             EndRoundLogAndAnnouce("NT detects irregular length of shift, and has decided to sever connection with the station.",
-                $"Shift ended INSTANTLY due to hard time out.");
+                $"Shift ended INSTANTLY due to hard time out. curTime={_timing.CurTime}, endRoundTime={_endRound}");
             _roundEnd.EndRound(); // end round instantly
         }
         else if (fractionDead > 0.5f && !_roundEnd.IsRoundEndRequested())
@@ -99,7 +101,7 @@ public sealed class AutoShuttleRecallSystem : EntitySystem
         else if (_timing.CurTime > _callShuttle && !_roundEnd.IsRoundEndRequested())
         {
             EndRoundLogAndAnnouce("Shift ended, please finish your procedures and prepare for departure.",
-                $"Shift ended due to time out.");
+                $"Shift ended due to time out. curTime={_timing.CurTime}, callShuttleTime={_callShuttle}");
             _roundEnd.RequestRoundEnd(null, false);
         }
     }
@@ -143,7 +145,9 @@ public sealed class AutoShuttleRecallSystem : EntitySystem
 
             if (_mobState.IsAlive(uid, mob))
                 healthy++;
-            if (_mobState.IsIncapacitated(uid, mob)) // Count those in crit as dead
+            if (_mobState.IsCritical(uid, mob))
+                healthy++;
+            if (_mobState.IsDead(uid, mob)) // Count those in crit as dead
                 dead++;
         }
         // var ghosts = AllEntityQuery<GhostComponent>();
