@@ -70,6 +70,8 @@ public sealed class AutoShuttleRecallSystem : EntitySystem
         var healthy = x.Item1;
         var dead = x.Item2; // Some reason doesn't count ghosts
         _totalHumans = Math.Max(healthy + dead, _totalHumans);
+        if (_totalHumans == 0)
+            return; // Nobody joined yet, so no need to check.
         var fractionDead = Math.Abs(1 - (float)healthy / _totalHumans);
 
         if (fractionDead >= 1) // Just end if absolutely no one is alive
@@ -143,7 +145,9 @@ public sealed class AutoShuttleRecallSystem : EntitySystem
 
             if (_mobState.IsAlive(uid, mob))
                 healthy++;
-            if (_mobState.IsIncapacitated(uid, mob)) // Count those in crit as dead
+            if (_mobState.IsCritical(uid, mob))
+                healthy++;
+            if (_mobState.IsDead(uid, mob)) // Count those in crit as dead
                 dead++;
         }
         // var ghosts = AllEntityQuery<GhostComponent>();

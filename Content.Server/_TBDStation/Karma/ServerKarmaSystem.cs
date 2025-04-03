@@ -29,6 +29,7 @@ using Content.Server.Research.Systems;
 using Content.Shared.Administration.Logs;
 using Content.Shared.Database;
 using Content.Server.Administration.Components;
+using Robust.Shared.Timing;
 
 namespace Content.Server._TBDStation.ServerKarma;
 /// <summary>
@@ -48,9 +49,9 @@ public sealed class ServerKarmaSystem : EntitySystem
     [Dependency] private readonly MobStateSystem _mobStateSystem = default!;
     [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
     [Dependency] private readonly ISharedAdminLogManager _adminLogger = default!;
+    [Dependency] private readonly GameTicker _gameTicker = default!;
+    [Dependency] private readonly IGameTiming _gameTiming = default!;
 
-    private readonly float _karmaEndRoundMultiplier = 1;
-    private bool _roundEnded = false;
     // assholeMeter[user] -> (timeSinceAsshole, karmaMult)
     private Dictionary<NetUserId, Tuple<DateTime, float>> _assholeMeter = new Dictionary<NetUserId, Tuple<DateTime, float>>();
     private List<int> _departmentSuccess = new List<int>();
@@ -58,7 +59,6 @@ public sealed class ServerKarmaSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        _roundEnded = false;
         _karmaMan.KarmaChange += OnKarmaChange;
         for (int i = 0; i < Enum.GetNames(typeof(DepStatDEvent.DepStatKey)).Length; i++)
             _departmentSuccess.Add(0);
@@ -86,7 +86,6 @@ public sealed class ServerKarmaSystem : EntitySystem
 
     private void OnRoundEndCleanup(RoundRestartCleanupEvent ev)
     {
-        _roundEnded = true;
         _karmaMan.Save();
         for (int i = 0; i < Enum.GetNames(typeof(DepStatDEvent.DepStatKey)).Length; i++)
             _departmentSuccess[i] = 0;
@@ -158,6 +157,7 @@ public sealed class ServerKarmaSystem : EntitySystem
             $"LESS end round karma change since round duration: {ev.RoundDuration} is shorter then 30 mins");
         // Add department data to karma sums
         // Iterate over each player
+        float _karmaEndRoundMultiplier = Math.Clamp(1.0f - (float)Math.Abs(ev.RoundDuration.TotalMinutes - 60) / 60, 0.3f, 1f);
         foreach (var player in players)
         {
             // Calculate job success karma based on departments
@@ -285,10 +285,24 @@ public sealed class ServerKarmaSystem : EntitySystem
     }
 
     // it is important to note that (int) rounds down floats
+    /// <summary>
+    /// ONLY USED FOR NEGATIVE KARMA LOSS
+    /// </summary>
+    /// <param name="session"></param>
+    /// <param name="val"></param>
+    /// <returns></returns>
     private float GetMultiplier(ICommonSession session, int val)
     {
-        if (_roundEnded)
+        if (_gameTicker.RunLevel == GameRunLevel.PostRound)
             return 0;
+
+        float mult = 1;
+
+        var stationMinuates = (float)_gameTiming.CurTime.Subtract(_gameTicker.RoundStartTimeSpan).TotalMinutes;
+        if (stationMinuates > 60)
+        {
+            mult = Math.Clamp(1.0f - (float)Math.Abs(stationMinuates - 60) / 60, 0.3f, 1f);
+        }
         // TODO: deal with retaliation and allow it to happen without the retaliator losing karma.
         if (_playerSystem.ContentData(session) is not { Mind: { } mindId })
             return 0.5f * val;
