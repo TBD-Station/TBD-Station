@@ -37,7 +37,7 @@
   materials:
     Steel: 300
     Plastic: 100
-    
+
 - type: latheRecipe
   id: BoneSetterAdvanced
   result: BoneSetterAdvanced
@@ -128,7 +128,7 @@
   materials:
     Plastic: 200
     Steel: 200
-      
+
 - type: latheRecipe
   id: LeftFootCyber
   result: LeftFootCyber
@@ -222,7 +222,7 @@
     Steel: 200
     Plasma: 300
     Glass: 100
-    
+
 - type: latheRecipe
   id: EyeImplantSecurity
   result: EyeImplantSecurity
@@ -258,7 +258,7 @@
     Gold: 300
     Plasma: 300
     Glass: 100
-    
+
 # Automenders
 
 - type: latheRecipe
@@ -271,7 +271,7 @@
     Plastic: 200
     Steel: 100
     Silver: 50
-    
+
 - type: latheRecipe
   id: AutoMenderBurn
   result: AutoMenderBurn
