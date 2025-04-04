@@ -1,4 +1,4 @@
-- type: entity # file edited based off starlight
+- type: entity
   id: BaseSpeedLoaderMagnum
   name: "speed loader (.45 magnum)"
   parent: [ BaseItem, BaseSecurityContraband ]
@@ -13,10 +13,19 @@
       tags:
         - CartridgeMagnum
     capacity: 6
+  - type: Sprite
   - type: ContainerContainer
     containers:
       ballistic-ammo: !type:Container
         ents: []
+
+- type: entity
+  id: SpeedLoaderMagnum
+  name: "speed loader (.45 magnum)"
+  parent: BaseSpeedLoaderMagnum
+  components:
+  - type: BallisticAmmoProvider
+    proto: CartridgeMagnum
   - type: Sprite
     sprite: Objects/Weapons/Guns/Ammunition/SpeedLoaders/Magnum/magnum_speed_loader.rsi
     layers:
@@ -24,9 +33,6 @@
         map: [ "enum.GunVisualLayers.Base" ]
       - state: base-6
         map: [ "enum.GunVisualLayers.Mag" ]
-      - state: base-tip-6
-        map: [ "enum.GunVisualLayers.Tip" ]
-        color: "#C7B458"
   - type: MagazineVisuals
     magState: base
     steps: 7
@@ -36,7 +42,7 @@
 - type: entity
   id: SpeedLoaderMagnumEmpty
   name: "speed loader (.45 magnum any)"
-  parent: BaseSpeedLoaderMagnum
+  parent: SpeedLoaderMagnum
   components:
   - type: BallisticAmmoProvider
     proto: null
@@ -52,58 +58,12 @@
         map: [ "enum.GunVisualLayers.Mag" ]
 
 - type: entity
-  id: SpeedLoaderMagnumSP
-  name: "speed loader (.45 magnum SP)"
-  parent: BaseSpeedLoaderMagnum
+  id: SpeedLoaderMagnumIncendiary
+  name: "speed loader (.45 magnum incendiary)"
+  parent: SpeedLoaderMagnum
   components:
   - type: BallisticAmmoProvider
-    proto: CartridgeMagnumSP
-  - type: Sprite
-    sprite: Objects/Weapons/Guns/Ammunition/SpeedLoaders/Magnum/magnum_speed_loader.rsi
-    layers:
-      - state: base
-        map: [ "enum.GunVisualLayers.Base" ]
-      - state: base-6
-        map: [ "enum.GunVisualLayers.Mag" ]
-      - state: base-tip-6
-        map: [ "enum.GunVisualLayers.Tip" ]
-        color: "#3F47DB"
-
-- type: entity
-  id: SpeedLoaderMagnumHP
-  name: "speed loader (.45 magnum HP)"
-  parent: BaseSpeedLoaderMagnum
-  components:
-  - type: BallisticAmmoProvider
-    proto: CartridgeMagnumHP
-  - type: Sprite
-    sprite: Objects/Weapons/Guns/Ammunition/SpeedLoaders/Magnum/magnum_speed_loader.rsi
-    layers:
-      - state: base
-        map: [ "enum.GunVisualLayers.Base" ]
-      - state: base-6
-        map: [ "enum.GunVisualLayers.Mag" ]
-      - state: base-tip-6
-        map: [ "enum.GunVisualLayers.Tip" ]
-        color: "#000000"
-
-- type: entity
-  id: SpeedLoaderMagnumFMJ
-  name: "speed loader (.45 magnum FMJ)"
-  parent: BaseSpeedLoaderMagnum
-  components:
-  - type: BallisticAmmoProvider
-    proto: CartridgeMagnumFMJ
-  - type: Sprite
-    sprite: Objects/Weapons/Guns/Ammunition/SpeedLoaders/Magnum/magnum_speed_loader.rsi
-    layers:
-      - state: base
-        map: [ "enum.GunVisualLayers.Base" ]
-      - state: base-6
-        map: [ "enum.GunVisualLayers.Mag" ]
-      - state: base-tip-6
-        map: [ "enum.GunVisualLayers.Tip" ]
-        color: "#C7B458"
+    proto: CartridgeMagnumIncendiary
 
 - type: entity
   id: SpeedLoaderMagnumPractice
@@ -117,15 +77,17 @@
     layers:
       - state: base
         map: [ "enum.GunVisualLayers.Base" ]
-      - state: base-6
+      - state: practice-6
         map: [ "enum.GunVisualLayers.Mag" ]
-      - state: base-tip-6
-        map: [ "enum.GunVisualLayers.Tip" ]
-        color: "#D86E2C"
+  - type: MagazineVisuals
+    magState: practice
+    steps: 7
+    zeroVisible: false
+  - type: Appearance
 
 - type: entity
   id: SpeedLoaderMagnumAP
-  name: "speed loader (.45 magnum AP)"
+  name: "speed loader (.45 magnum armor-piercing)"
   parent: BaseSpeedLoaderMagnum
   components:
   - type: BallisticAmmoProvider
@@ -135,29 +97,13 @@
     layers:
       - state: base
         map: [ "enum.GunVisualLayers.Base" ]
-      - state: base-6
+      - state: piercing-6
         map: [ "enum.GunVisualLayers.Mag" ]
-      - state: base-tip-6
-        map: [ "enum.GunVisualLayers.Tip" ]
-        color: "#1A8C1A"
-
-- type: entity
-  id: SpeedLoaderMagnumIncendiary
-  name: "speed loader (.45 magnum incendiary)"
-  parent: BaseSpeedLoaderMagnum
-  components:
-  - type: BallisticAmmoProvider
-    proto: CartridgeMagnumIncendiary
-  - type: Sprite
-    sprite: Objects/Weapons/Guns/Ammunition/SpeedLoaders/Magnum/magnum_speed_loader.rsi
-    layers:
-      - state: base
-        map: [ "enum.GunVisualLayers.Base" ]
-      - state: base-6
-        map: [ "enum.GunVisualLayers.Mag" ]
-      - state: base-tip-6
-        map: [ "enum.GunVisualLayers.Tip" ]
-        color: "#BFC8CA"
+  - type: MagazineVisuals
+    magState: piercing
+    steps: 7
+    zeroVisible: false
+  - type: Appearance
 
 - type: entity
   id: SpeedLoaderMagnumUranium
@@ -171,8 +117,10 @@
     layers:
       - state: base
         map: [ "enum.GunVisualLayers.Base" ]
-      - state: base-6
+      - state: uranium-6
         map: [ "enum.GunVisualLayers.Mag" ]
-      - state: base-tip-6
-        map: [ "enum.GunVisualLayers.Tip" ]
-        color: "#65fe08"
+  - type: MagazineVisuals
+    magState: uranium
+    steps: 7
+    zeroVisible: false
+  - type: Appearance

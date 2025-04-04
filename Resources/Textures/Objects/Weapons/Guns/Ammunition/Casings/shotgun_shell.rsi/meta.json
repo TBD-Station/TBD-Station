@@ -11,34 +11,61 @@
             "name": "base"
         },
         {
-            "name": "tip"
+            "name": "base-spent"
         },
         {
-            "name": "tip-long"
+            "name": "beanbag"
         },
         {
-            "name": "spent"
+            "name": "beanbag-spent"
         },
         {
-            "name": "spent-long"
+            "name": "blank"
+        },
+        {
+            "name": "blank-spent"
         },
         {
             "name": "flare"
         },
         {
+            "name": "flare-spent"
+        },
+        {
             "name": "improvised"
+        },
+        {
+            "name": "improvised-spent"
         },
         {
             "name": "incendiary"
         },
         {
+            "name": "incendiary-spent"
+        },
+        {
             "name": "practice"
+        },
+        {
+            "name": "practice-spent"
         },
         {
             "name": "slug"
         },
         {
+            "name": "slug-spent"
+        },
+        {
             "name": "depleted-uranium"
+        },
+        {
+            "name": "depleted-uranium-spent"
+        },
+        {
+            "name": "tranquilizer"
+        },
+        {
+            "name": "tranquilizer-spent"
         }
     ]
 }
