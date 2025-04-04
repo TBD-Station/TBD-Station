@@ -10,6 +10,7 @@
       organs:
         brain: OrganHumanBrain
         eyes: OrganHumanEyes
+        tongue: OrganHumanTongue
     torso:
       part: TorsoVox
       connections:
@@ -23,6 +24,7 @@
         stomach: OrganHumanStomach
         liver: OrganHumanLiver
         kidneys: OrganHumanKidneys
+
     right arm:
       part: RightArmVox
       connections:

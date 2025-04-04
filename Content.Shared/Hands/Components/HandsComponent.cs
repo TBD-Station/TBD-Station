@@ -157,7 +157,8 @@ public enum HandLocation : byte
 {
     Left,
     Middle,
-    Right
+    Right,
+    Functional, // Starlight
 }
 
 /// <summary>

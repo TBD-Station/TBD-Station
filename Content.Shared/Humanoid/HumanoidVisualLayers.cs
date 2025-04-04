@@ -31,5 +31,7 @@ namespace Content.Shared.Humanoid
         Ensnare,
         Fire,
 
+        Other = 0, // Starlight
+
     }
 }
