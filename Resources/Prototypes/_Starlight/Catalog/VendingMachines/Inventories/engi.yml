@@ -1,8 +1,6 @@
 - type: listing
   id: VendorPrototypeJawsOfLife
   productEntity: PrototypeJawsOfLife
-  cost:
-    NTCredit: 153
   categories:
   - SLEnginery
   conditions:

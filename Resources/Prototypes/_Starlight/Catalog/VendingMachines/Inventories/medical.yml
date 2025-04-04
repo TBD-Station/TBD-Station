@@ -1,8 +1,6 @@
 - type: listing
   id: VendorGoldenBeaker
   productEntity: GoldenBeaker
-  cost:
-    NTCredit: 200
   categories:
   - SLChemistry
   conditions:
@@ -12,8 +10,6 @@
 - type: listing
   id: VendorVialCase
   productEntity: VialCase
-  cost:
-    NTCredit: 37
   categories:
   - SLChemistry
   conditions:
@@ -23,8 +19,6 @@
 - type: listing
   id: VendorCleanerGrenade
   productEntity: CleanerGrenade
-  cost:
-    NTCredit: 13
   categories:
   - SLChemistry
   conditions:
@@ -34,8 +28,6 @@
 - type: listing
   id: VendorBluebrutepack20
   productEntity: Bluebrutepack20
-  cost:
-    NTCredit: 34
   categories:
   - SLMedical
   conditions:
@@ -45,8 +37,6 @@
 - type: listing
   id: VendorBlueointment20
   productEntity: Blueointment20
-  cost:
-    NTCredit: 34
   categories:
   - SLMedical
   conditions:
@@ -56,8 +46,6 @@
 - type: listing
   id: VendorMobTrueDoctorbot
   productEntity: MobTrueDoctorbot
-  cost:
-    NTCredit: 999
   categories:
   - SLMedical
   conditions:
@@ -67,8 +55,6 @@
 - type: listing
   id: VendorMobOrganHumanHeart
   productEntity: OrganHumanHeart
-  cost:
-    NTCredit: 331
   categories:
   - SLSurgery
   conditions:
@@ -76,8 +62,6 @@
 - type: listing
   id: VendorMobOrganHumanStomach
   productEntity: OrganHumanStomach
-  cost:
-    NTCredit: 124
   categories:
   - SLSurgery
   conditions:
@@ -85,8 +69,6 @@
 - type: listing
   id: VendorMobOrganHumanLiver
   productEntity: OrganHumanLiver
-  cost:
-    NTCredit: 143
   categories:
   - SLSurgery
   conditions:
@@ -94,8 +76,6 @@
 - type: listing
   id: VendorMobOrganHumanKidneys
   productEntity: OrganHumanKidneys
-  cost:
-    NTCredit: 265
   categories:
   - SLSurgery
   conditions:
@@ -103,8 +83,6 @@
 - type: listing
   id: VendorMobOrganHumanLungs
   productEntity: OrganHumanLungs
-  cost:
-    NTCredit: 297
   categories:
   - SLSurgery
   conditions:
@@ -112,8 +90,6 @@
 - type: listing
   id: VendorMobOrganHumanTongue
   productEntity: OrganHumanTongue
-  cost:
-    NTCredit: 48
   categories:
   - SLSurgery
   conditions:
@@ -121,8 +97,6 @@
 - type: listing
   id: VendorMobOrganHumanEyes
   productEntity: OrganHumanEyes
-  cost:
-    NTCredit: 233
   categories:
   - SLSurgery
   conditions:
@@ -130,8 +104,6 @@
 - type: listing
   id: VendorLeftLegHuman
   productEntity: LeftLegHuman
-  cost:
-    NTCredit: 153
   categories:
   - SLSurgery
   conditions:
@@ -139,8 +111,6 @@
 - type: listing
   id: VendorRightLegHuman
   productEntity: RightLegHuman
-  cost:
-    NTCredit: 153
   categories:
   - SLSurgery
   conditions:
@@ -148,8 +118,6 @@
 - type: listing
   id: VendorLeftFootHuman
   productEntity: LeftFootHuman
-  cost:
-    NTCredit: 37
   categories:
   - SLSurgery
   conditions:
@@ -157,8 +125,6 @@
 - type: listing
   id: VendorRightFootHuman
   productEntity: RightFootHuman
-  cost:
-    NTCredit: 37
   categories:
   - SLSurgery
   conditions:
