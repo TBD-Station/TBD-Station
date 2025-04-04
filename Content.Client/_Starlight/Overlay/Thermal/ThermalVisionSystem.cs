@@ -1,4 +1,3 @@
-using Content.Client._Starlight.Overlay.Cyclorites;
 using Content.Client.Eye.Blinding;
 using Content.Client.GameTicking.Managers;
 using Content.Shared.Eye.Blinding.Components;

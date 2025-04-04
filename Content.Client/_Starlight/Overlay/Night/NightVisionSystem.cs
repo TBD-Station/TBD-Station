@@ -1,4 +1,3 @@
-using Content.Client._Starlight.Overlay.Cyclorites;
 using Content.Shared.Eye.Blinding.Components;
 using Content.Shared.Mech.Components;
 using Content.Shared.Mech;
