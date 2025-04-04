@@ -20,8 +20,8 @@
   id: CritterMechs
   name: research-technology-critter-mechs
   icon:
-    sprite: Objects/Specific/Mech/Mechs/Basic/hamtr.rsi
-    state: base
+    sprite: Objects/Specific/Mech/mecha.rsi
+    state: hamtr
   discipline: CivilianServices
   tier: 1
   cost: 7500
@@ -161,8 +161,8 @@
   id: HONKMech
   name: research-technology-honk-mech
   icon:
-    sprite: Objects/Specific/Mech/Mechs/Basic/honker.rsi
-    state: base
+    sprite: Objects/Specific/Mech/mecha.rsi
+    state: honker
   discipline: CivilianServices
   tier: 2
   cost: 7500
@@ -176,19 +176,6 @@
   - HonkerPeripheralsElectronics
   - HonkerTargetingElectronics
   - MechEquipmentHorn
-
-# - type: technology # Starlight
-#   id: HONKWeapons
-#   name: research-technology-honk-weapons
-#   icon:
-#     sprite: Objects/Specific/Mech/mecha_equipment.rsi
-#     state: mecha_bananamrtr
-#   discipline: CivilianServices
-#   tier: 2
-#   cost: 6000
-#   recipeUnlocks:
-#   - MechEquipmentHonkerBananaMortar
-#   - MechEquipmentHonkerMousetrapMortar
 
 - type: technology
   id: AdvancedSpray
