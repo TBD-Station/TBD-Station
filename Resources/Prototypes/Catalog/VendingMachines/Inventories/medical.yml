@@ -10,5 +10,7 @@
     BoxBottle: 3
     ClothingEyesHudMedical: 2
     ClothingEyesEyepatchHudMedical: 2
+    AutoMenderBruteFilled: 1 # Starlight
+    AutoMenderBurnFilled: 1 # Starlight
   contrabandInventory:
     FoodApple: 1

@@ -11,7 +11,7 @@ using Robust.Shared.GameObjects;
 
 namespace Content.IntegrationTests.Tests.Storage;
 
-public sealed class StorageInteractionTest : InteractionTest
+public sealed class StorageInteractionTest : InteractionTest // - TESTREMOVED
 {
     /// <summary>
     /// Check that players can interact with items in storage if the storage UI is open

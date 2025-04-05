@@ -8,7 +8,7 @@ using Content.Shared.Shuttles.Components;
 using Robust.Shared.GameObjects;
 using Robust.Shared.Map.Components;
 
-namespace Content.IntegrationTests.Tests.Station;
+namespace Content.IntegrationTests.Tests.Station; // - TESTREMOVED
 
 [TestFixture]
 [TestOf(typeof(EmergencyShuttleSystem))]

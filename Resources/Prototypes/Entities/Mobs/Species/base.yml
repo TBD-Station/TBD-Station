@@ -9,6 +9,7 @@
   id: BaseMobSpecies
   abstract: true
   components:
+  - type: SurgeryTarget # Starlight
   - type: Sprite
     layers:
     - map: [ "enum.HumanoidVisualLayers.Chest" ]
@@ -189,6 +190,12 @@
         type: HumanoidMarkingModifierBoundUserInterface
       enum.StrippingUiKey.Key:
         type: StrippableBoundUserInterface
+      # enum.StoreUiKey.Key: # Starlight
+      #   type: StoreBoundUserInterface
+      enum.SurgeryUIKey.Key: # Starlight
+        type: SurgeryBui
+      # enum.VampireMutationUiKey.Key: # Starlight
+      #   type: VampireMutationBoundUserInterface
   - type: Puller
   - type: Speech
     speechSounds: Alto
@@ -241,6 +248,7 @@
         Brute: -0.07
   - type: Fingerprint
   - type: Blindable
+  # - type: DarkenedVision # Starlight
   # Other
   - type: Temperature
     heatDamageThreshold: 325
@@ -343,6 +351,7 @@
   - type: Body
     prototype: Human
     requiredLegs: 2
+  # - type: Absorbable # Starlight
   - type: UserInterface
     interfaces:
       enum.HumanoidMarkingModifierKey.Key: # sure, this can go here too

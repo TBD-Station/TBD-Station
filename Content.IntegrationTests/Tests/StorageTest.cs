@@ -13,7 +13,7 @@ using Robust.Shared.Prototypes;
 namespace Content.IntegrationTests.Tests
 {
     [TestFixture]
-    public sealed class StorageTest
+    public sealed class StorageTest // - TESTREMOVED
     {
         /// <summary>
         /// Can an item store more than itself weighs.

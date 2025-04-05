@@ -3,7 +3,7 @@ using Robust.Shared.Map;
 
 namespace Content.IntegrationTests.Tests.Tiles;
 
-public sealed class TileConstructionTests : InteractionTest
+public sealed class TileConstructionTests : InteractionTest // - TESTREMOVED
 {
     /// <summary>
     /// Test placing and cutting a single lattice.

@@ -3,7 +3,7 @@ using Robust.Shared.Exceptions;
 namespace Content.IntegrationTests.Tests
 {
     [TestFixture]
-    public sealed class StartTest
+    public sealed class StartTest // - TESTREMOVED
     {
         /// <summary>
         ///     Test that the server, and client start, and stop.

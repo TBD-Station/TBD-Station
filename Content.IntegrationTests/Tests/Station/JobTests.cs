@@ -7,7 +7,7 @@ namespace Content.IntegrationTests.Tests.Station;
 
 [TestFixture]
 [TestOf(typeof(SharedJobSystem))]
-public sealed class JobTest
+public sealed class JobTest // - TESTREMOVED
 {
     /// <summary>
     /// Ensures that every job belongs to at most 1 primary department.

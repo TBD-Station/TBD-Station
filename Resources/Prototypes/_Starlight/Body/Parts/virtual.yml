@@ -1,0 +1,8 @@
+﻿- type: entity
+  id: PartVirtual
+  parent: BaseItem
+  components:
+  - type: BodyPart
+  - type: Sprite # Make test happy
+    sprite: _Starlight/Mobs/Species/Cyberlimbs/parts.rsi
+    state: "l_silver_arm"

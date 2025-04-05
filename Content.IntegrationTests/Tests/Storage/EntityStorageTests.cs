@@ -6,7 +6,7 @@ using Robust.Shared.GameObjects;
 namespace Content.IntegrationTests.Tests.Storage;
 
 [TestFixture]
-public sealed class EntityStorageTests
+public sealed class EntityStorageTests // - TESTREMOVED
 {
     [TestPrototypes]
     private const string Prototypes = @"

@@ -6,7 +6,7 @@ using Robust.Shared.Toolshed;
 namespace Content.IntegrationTests.Tests.Toolshed;
 
 [TestFixture]
-public sealed class AdminTest : ToolshedTest
+public sealed class AdminTest : ToolshedTest // - TESTREMOVED
 {
     [Test]
     public async Task AllCommandsHavePermissions()

@@ -10,6 +10,7 @@
       organs:
         brain: OrganHumanBrain
         eyes: OrganHumanEyes
+        tongue: OrganHumanTongue
     torso:
       part: TorsoHuman
       connections:
@@ -23,6 +24,7 @@
         stomach: OrganDwarfStomach
         liver: OrganDwarfLiver
         kidneys: OrganHumanKidneys
+
     right arm:
       part: RightArmHuman
       connections:

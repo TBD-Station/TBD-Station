@@ -10,7 +10,7 @@ namespace Content.IntegrationTests.Tests.Tag
 {
     [TestFixture]
     [TestOf(typeof(TagComponent))]
-    public sealed class TagTest
+    public sealed class TagTest // - TESTREMOVED
     {
         private const string TagEntityId = "TagTestDummy";
 

@@ -13,6 +13,7 @@
         liver: OrganAnimalLiver
         heart: OrganAnimalHeart
         kidneys: OrganAnimalKidneys
+
     legs:
       part: LegsAnimal
       connections:

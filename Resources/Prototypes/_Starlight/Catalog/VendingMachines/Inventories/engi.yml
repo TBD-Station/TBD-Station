@@ -1,0 +1,8 @@
+# - type: listing
+#   id: VendorPrototypeJawsOfLife
+#   productEntity: PrototypeJawsOfLife
+#   categories:
+#   - SLEnginery
+#   conditions:
+#   - !type:ListingLimitedStockCondition
+#     stock: 4

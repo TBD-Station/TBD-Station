@@ -8,7 +8,7 @@ using Robust.Shared.Prototypes;
 namespace Content.IntegrationTests.Tests;
 
 [TestFixture]
-public sealed class SalvageTest
+public sealed class SalvageTest // - TESTREMOVED
 {
     /// <summary>
     /// Asserts that all salvage maps have been saved as grids and are loadable.

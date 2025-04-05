@@ -6,7 +6,7 @@ using Robust.Shared.Map;
 
 namespace Content.IntegrationTests.Tests.Strip;
 
-public sealed class StrippableTest : InteractionTest
+public sealed class StrippableTest : InteractionTest // - TESTREMOVED
 {
     protected override string PlayerPrototype => "MobHuman";
 

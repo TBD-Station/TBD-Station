@@ -191,7 +191,6 @@
     unlitRunningState: unlit-building
     staticPacks:
     - ChemistryStatic
-    - SurgeryStatic
     dynamicPacks:
     - AdvancedTools
     - ScienceEquipment
@@ -213,6 +212,10 @@
     - SecurityExplosives
     - SecurityEquipment
     - SecurityWeapons
+    - StarlightSurgeryDynamic
+    - StarlightCyberlimbDynamic
+    - StarlightCyberOrgansDynamic
+    - StarlightImplantDynamic
 
 - type: entity
   id: ProtolatheHyperConvection
@@ -400,6 +403,7 @@
     - SecurityAmmo
     - SecurityWeapons
     - SecurityDisablers
+    - SecurityCyberLimbs
   - type: MaterialStorage
     whitelist:
       tags:
@@ -469,8 +473,11 @@
     - RollerBedsStatic
     - MedicalClothingStatic
     - EmptyMedkitsStatic
-    - SurgeryStatic
     dynamicPacks:
+    - StarlightSurgeryDynamic # Starlight
+    - StarlightCyberlimbDynamic
+    - StarlightCyberOrgansDynamic
+    - StarlightImplantDynamic
     - Chemistry
   - type: Machine
     board: MedicalTechFabCircuitboard

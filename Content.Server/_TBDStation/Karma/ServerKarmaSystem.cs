@@ -204,24 +204,23 @@ public sealed class ServerKarmaSystem : EntitySystem
         // Should lose extra 3x karma if said person is crit and less 0.5x karma if their full health.
         // TODO: Should not lose karma if you attack nukie/wizard, should lose karma if you unprovoked attack heratic/traitor unless they have killed someone.
         var target = new EntityUid(ev.Target);
-        if (_actors.TryGetSession(target, out ICommonSession? hitSession))
-        {
-            if (hitSession != null)
-            {
-                float delta = GetMultiplier(session, hitSession, ev.Damage);
-                if (_mobStateSystem.IsCritical(target)) // more if crit
-                    delta *= 3;
-                else if (_mobStateSystem.IsDead(target)) // less if dead
-                    delta *= 0.5f;
-                if ((int) delta == 0)
-                    return;
+        if (!_actors.TryGetSession(target, out ICommonSession? hitSession))
+            return;
+        if (hitSession == null)
+            return;
 
-                _adminLogger.Add(LogType.Karma,
-                LogImpact.Medium,
-                $"{ToPrettyString(new EntityUid(ev.User)):actor} hit {ToPrettyString(target):subject} lossing {(int) delta} karma");
-                _karmaMan.RemoveKarma(netUserId, (int) delta);
-            }
-        }
+        float delta = GetMultiplier(session, hitSession, ev.Damage);
+        if (_mobStateSystem.IsCritical(target)) // more if crit
+            delta *= 3;
+        else if (_mobStateSystem.IsDead(target)) // less if dead
+            delta *= 0.5f;
+
+        if ((int)delta == 0)
+            return;
+        _adminLogger.Add(LogType.Karma,
+        LogImpact.Medium,
+        $"{ToPrettyString(new EntityUid(ev.User)):actor} hit {ToPrettyString(target):subject} lossing {(int) delta} karma");
+        _karmaMan.RemoveKarma(netUserId, (int)delta);
     }
 
     private void OnKarmaGrief(PlayerKarmaGriefEvent ev)
@@ -246,14 +245,14 @@ public sealed class ServerKarmaSystem : EntitySystem
             case PlayerKarmaGriefEvent.GriefType.Fire:
                 break;
         }
-        if ((int) dif > 0)
-        {
-            _adminLogger.Add(LogType.Karma,
-            LogImpact.Medium,
-            $"{ToPrettyString(new EntityUid(ev.User)):actor} griefed by {ev.Grief} lossing {(int) dif} karma");
-            _karmaMan.RemoveKarma(netUserId, (int) dif);
-            UpdateAssholeMeter(netUserId, dif);
-        }
+
+        if ((int)dif <= 0)
+            return;
+        _adminLogger.Add(LogType.Karma,
+        LogImpact.Medium,
+        $"{ToPrettyString(new EntityUid(ev.User)):actor} griefed by {ev.Grief} lossing {(int) dif} karma");
+        _karmaMan.RemoveKarma(netUserId, (int)dif);
+        UpdateAssholeMeter(netUserId, dif);
     }
 
     #endregion

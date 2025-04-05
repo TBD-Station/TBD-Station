@@ -9,7 +9,7 @@ namespace Content.IntegrationTests.Tests.Toolshed;
 // this is an EXACT DUPLICATE of LocTest from robust. If you modify this, modify that too.
 // Anyone who fails to heed these instructions consents to being scrungled to death.
 [TestFixture]
-public sealed class LocTest : ToolshedTest
+public sealed class LocTest : ToolshedTest // - TESTREMOVED
 {
     [Test]
     public async Task AllCommandsHaveDescriptions()

@@ -7,6 +7,7 @@ using Content.Server.Instruments;
 using Content.Server.Light.EntitySystems;
 using Content.Server.PDA.Ringer;
 using Content.Server.RoundEnd;
+using Content.Server.Shuttles.Systems;
 using Content.Server.Station.Systems;
 using Content.Server.Store.Components;
 using Content.Server.Store.Systems;
@@ -40,6 +41,7 @@ namespace Content.Server.PDA
         [Dependency] private readonly ContainerSystem _containerSystem = default!;
         [Dependency] private readonly IdCardSystem _idCard = default!;
         [Dependency] private readonly RoundEndSystem _roundEndSystem = default!; // TBDStation
+        [Dependency] private readonly EmergencyShuttleSystem _shuttle = default!; // TBDStation
 
         public override void Initialize()
         {
@@ -61,6 +63,7 @@ namespace Content.Server.PDA
             SubscribeLocalEvent<StationRenamedEvent>(OnStationRenamed);
             SubscribeLocalEvent<EntityRenamedEvent>(OnEntityRenamed, after: new[] { typeof(IdCardSystem) });
             SubscribeLocalEvent<AlertLevelChangedEvent>(OnAlertLevelChanged);
+            SubscribeLocalEvent<RoundEndSystemChangedEvent>(OnRoundEndChanged); // TBDStation
         }
 
         private void OnEntityRenamed(ref EntityRenamedEvent ev)
@@ -134,6 +137,10 @@ namespace Content.Server.PDA
         }
 
         private void OnAlertLevelChanged(AlertLevelChangedEvent args)
+        {
+            UpdateAllPdaUisOnStation();
+        }
+        private void OnRoundEndChanged(RoundEndSystemChangedEvent args) // TBDStation
         {
             UpdateAllPdaUisOnStation();
         }
@@ -213,7 +220,9 @@ namespace Content.Server.PDA
                 showUplink,
                 hasInstrument,
                 address,
-                _roundEndSystem.ExpectedCountdownEnd // TBDStation
+                _roundEndSystem.ExpectedCountdownEnd, // TBDStation
+                _shuttle._consoleAccumulator, // TBDStation
+                _shuttle.EmergencyShuttleArrived // TBDStation
                 );
 
             _ui.SetUiState(uid, PdaUiKey.Key, state);

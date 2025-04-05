@@ -15,7 +15,7 @@ namespace Content.IntegrationTests.Tests.Station;
 
 [TestFixture]
 [TestOf(typeof(StationJobsSystem))]
-public sealed class StationJobsTest
+public sealed class StationJobsTest // - TESTREMOVED
 {
     [TestPrototypes]
     private const string Prototypes = @"

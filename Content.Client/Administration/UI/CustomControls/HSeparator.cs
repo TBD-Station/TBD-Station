@@ -9,16 +9,24 @@ public sealed class HSeparator : Control
 {
     private static readonly Color SeparatorColor = Color.FromHex("#3D4059");
 
-    public HSeparator(Color color)
+    private readonly StyleBoxFlat _styleBox; // Starlight
+
+    public Color Color // Starlight
     {
-        AddChild(new PanelContainer
+        get => _styleBox.BackgroundColor;
+        set => _styleBox.BackgroundColor = value;
+    }
+
+    public HSeparator(Color color) // Starlight Edited full method
+    {
+        _styleBox = new StyleBoxFlat
         {
-            PanelOverride = new StyleBoxFlat
-            {
-                BackgroundColor = color,
-                ContentMarginBottomOverride = 2, ContentMarginLeftOverride = 2
-            }
-        });
+            BackgroundColor = color,
+            ContentMarginBottomOverride = 2,
+            ContentMarginLeftOverride = 2
+        };
+
+        AddChild(new PanelContainer { PanelOverride = _styleBox });
     }
 
     public HSeparator() : this(SeparatorColor) { }
