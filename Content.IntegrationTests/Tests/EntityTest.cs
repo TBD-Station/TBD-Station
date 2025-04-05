@@ -355,7 +355,7 @@ namespace Content.IntegrationTests.Tests
                 "LoadedChunk", // Worldgen chunk loading malding.
                 "BiomeSelection", // Whaddya know, requires config.
                 "ActivatableUI", // Requires enum key
-                "LimbWithItems", // Starlight
+                "LimbWithItems", // Starlight - TESTREMOVED
             };
 
             // TODO TESTS
